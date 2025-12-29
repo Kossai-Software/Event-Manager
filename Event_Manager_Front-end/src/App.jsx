@@ -1,0 +1,2924 @@
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Search,
+  Calendar,
+  MapPin,
+  Users,
+  Clock,
+  Star,
+  Heart,
+  Share2,
+  Filter,
+  ChevronDown,
+  Menu,
+  X,
+  User,
+  Bell,
+  Settings,
+  LogOut,
+  Plus,
+  Edit3,
+  Trash2,
+  Check,
+  TrendingUp,
+  Award,
+  Target,
+  DollarSign,
+  Mail,
+  Phone,
+  Map,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  CheckCircle,
+  AlertCircle as LucideAlertCircle, // renamed to avoid conflict
+  CreditCard,
+  Lock,
+  Shield,
+  Home,
+  Ticket,
+  FileText,
+  HelpCircle,
+  ShoppingCart as ShoppingCartIcon,
+  Info as LucideInfo, // renamed
+  UploadCloud // replaces CloudUpload
+} from 'lucide-react';
+
+// 🔹 Mock data for events
+const mockEvents = [
+  {
+    id: 1,
+    title: "Tech Innovation Summit 2025",
+    date: "2025-11-15",
+    time: "09:00 AM",
+    location: "San Francisco Convention Center",
+    category: "Technology",
+    price: 299,
+    attendees: 1250,
+    capacity: 2000,
+    description: "Join industry leaders for the premier technology conference featuring cutting-edge innovations, networking opportunities, and hands-on workshops.",
+    image: "https://placehold.co/400x250/1e40af/white?text=Tech+Summit",
+    organizer: "Tech Innovators Inc.",
+    featured: true,
+    rating: 4.8,
+    reviews: 124,
+    tags: ["AI", "Blockchain", "Cloud Computing", "IoT"]
+  },
+  {
+    id: 2,
+    title: "Global Leadership Conference",
+    date: "2025-12-05",
+    time: "10:00 AM",
+    location: "New York Marriott Marquis",
+    category: "Business",
+    price: 450,
+    attendees: 850,
+    capacity: 1000,
+    description: "Develop your leadership skills with world-renowned speakers, interactive sessions, and practical strategies for modern leadership challenges.",
+    image: "https://placehold.co/400x250/dc2626/white?text=Leadership+Conf",
+    organizer: "Global Leadership Institute",
+    featured: true,
+    rating: 4.6,
+    reviews: 89,
+    tags: ["Leadership", "Strategy", "Management", "Innovation"]
+  },
+  {
+    id: 3,
+    title: "Music & Arts Festival",
+    date: "2025-11-22",
+    time: "06:00 PM",
+    location: "Central Park, NYC",
+    category: "Entertainment",
+    price: 75,
+    attendees: 3500,
+    capacity: 5000,
+    description: "A weekend celebration of music, art, and culture featuring local and international artists across multiple stages and art installations.",
+    image: "https://placehold.co/400x250/7c3aed/white?text=Music+Festival",
+    organizer: "Arts & Culture Collective",
+    featured: false,
+    rating: 4.9,
+    reviews: 312,
+    tags: ["Music", "Art", "Culture", "Performance"]
+  },
+  {
+    id: 4,
+    title: "Healthcare Innovation Forum",
+    date: "2025-12-12",
+    time: "08:30 AM",
+    location: "Boston Medical Center",
+    category: "Healthcare",
+    price: 199,
+    attendees: 420,
+    capacity: 600,
+    description: "Explore the latest advancements in healthcare technology, patient care, and medical research with leading healthcare professionals.",
+    image: "https://placehold.co/400x250/059669/white?text=Healthcare+Forum",
+    organizer: "Medical Innovation Network",
+    featured: false,
+    rating: 4.7,
+    reviews: 67,
+    tags: ["Healthcare", "MedTech", "Research", "Innovation"]
+  },
+  {
+    id: 5,
+    title: "Startup Pitch Competition",
+    date: "2025-11-28",
+    time: "01:00 PM",
+    location: "Silicon Valley Innovation Hub",
+    category: "Business",
+    price: 0,
+    attendees: 320,
+    capacity: 500,
+    description: "Watch emerging startups pitch their innovative ideas to a panel of venture capitalists and industry experts for funding opportunities.",
+    image: "https://placehold.co/400x250/ea580c/white?text=Startup+Pitch",
+    organizer: "Venture Catalyst Group",
+    featured: true,
+    rating: 4.5,
+    reviews: 42,
+    tags: ["Startups", "Investment", "Innovation", "Pitching"]
+  },
+  {
+    id: 6,
+    title: "Digital Marketing Masterclass",
+    date: "2025-12-18",
+    time: "11:00 AM",
+    location: "Chicago Digital Hub",
+    category: "Marketing",
+    price: 149,
+    attendees: 280,
+    capacity: 350,
+    description: "Master the latest digital marketing strategies including SEO, social media, content marketing, and data analytics from industry experts.",
+    image: "https://placehold.co/400x250/0891b2/white?text=Marketing+Class",
+    organizer: "Digital Growth Academy",
+    featured: false,
+    rating: 4.4,
+    reviews: 56,
+    tags: ["Marketing", "SEO", "Social Media", "Analytics"]
+  }
+];
+const categories = ["All", "Technology", "Business", "Entertainment", "Healthcare", "Marketing", "Education", "Sports"];
+const priceFilters = ["All", "Free", "Paid"];
+
+// 🔹 Event Card Component
+const EventCard = ({ 
+  event, 
+  onRegister, 
+  onAddToCart, 
+  isFavorited, 
+  onToggleFavorite,
+  onViewDetails 
+}) => (
+  <div 
+    className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+    onClick={onViewDetails}
+  >
+    <div className="relative">
+      <img src={event.image} alt={event.title} className="w-full h-48 object-cover" />
+      {event.featured && (
+        <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+          Featured
+        </div>
+      )}
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleFavorite(event.id);
+        }} 
+        className="absolute top-4 left-4 bg-white bg-opacity-90 p-2 rounded-full hover:bg-opacity-100 transition-all"
+      >
+        <Heart className={`h-5 w-5 ${isFavorited ? 'text-red-500 fill-current' : 'text-gray-600'}`} />
+      </button>
+      
+      <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 px-3 py-1 rounded-full text-sm font-medium text-blue-600">
+        {event.category}
+      </div>
+      
+      {event.price === 0 && (
+        <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+          Free
+        </div>
+      )}
+
+      {event.price > 0 && (
+        <div className="absolute top-4 right-4 bg-amber-400 text-white px-3 py-1 rounded-full text-sm font-medium">
+          Paid
+        </div>
+      )}
+
+    </div>
+    <div className="p-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <h3 className="text-xl font-bold text-gray-900 mb-2">{event.title}</h3>
+          <div className="flex items-center text-gray-600 mb-3">
+            <MapPin className="h-4 w-4 mr-1" />
+            <span className="text-sm">{event.location}</span>
+          </div>
+        </div>
+        <div className="flex items-center">
+          <Star className="h-4 w-4 text-yellow-400 fill-current" />
+          <span className="ml-1 text-sm font-medium text-gray-700">{event.rating}</span>
+          <span className="ml-1 text-sm text-gray-500">({event.reviews})</span>
+        </div>
+      </div>
+      <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center text-gray-600">
+          <Calendar className="h-4 w-4 mr-1" />
+          <span className="text-sm">{new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+        </div>
+        <div className="flex items-center text-gray-600">
+          <Clock className="h-4 w-4 mr-1" />
+          <span className="text-sm">{event.time}</span>
+        </div>
+      </div>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center text-gray-600">
+          <Users className="h-4 w-4 mr-1" />
+          <span className="text-sm">{event.attendees.toLocaleString()} / {event.capacity.toLocaleString()} attendees</span>
+        </div>
+        <div className={`text-lg font-bold ${event.price === 0 ? 'text-green-600' : 'text-blue-600'}`}>
+          {event.price === 0 ? "Free" : `$${event.price}`}
+        </div>
+      </div>
+      <div className="flex space-x-3">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onRegister(event);
+          }}
+          className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 flex items-center justify-center shadow-md"
+        >
+          <Plus className="h-5 w-5 mr-2" />
+          Register Now
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddToCart(event);
+          }}
+          className="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium flex items-center"
+        >
+          <ShoppingCartIcon className="h-4 w-4 mr-1" />
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+// 🔹 Featured Event Card
+const FeaturedEventCard = ({ 
+  event, 
+  onRegister, 
+  onAddToCart, 
+  isFavorited, 
+  onToggleFavorite,
+  onViewDetails 
+}) => (
+  <div 
+    className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-1 shadow-lg cursor-pointer"
+    onClick={onViewDetails}
+  >
+    <div className="bg-white rounded-xl overflow-hidden">
+      <div className="relative">
+        <img src={event.image} alt={event.title} className="w-full h-48 object-cover" />
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(event.id);
+          }} 
+          className="absolute top-4 left-4 bg-white bg-opacity-90 p-2 rounded-full hover:bg-opacity-100 transition-all z-10"
+        >
+          <Heart className={`h-5 w-5 ${isFavorited ? 'text-red-500 fill-current' : 'text-gray-600'}`} />
+        </button>
+
+        <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 px-3 py-1 rounded-full text-sm font-medium text-blue-600">
+          {event.category}
+        </div>
+
+        <div className="absolute bottom-4 right-2 bg-gradient-to-r from-purple-700 to-fuchsia-700 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+          FEATURED
+        </div>
+
+        {event.price === 0 && (
+          <div className="absolute top-2 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+            FREE
+          </div>
+        )}
+
+        {event.price > 0 && (
+          <div className="absolute top-4 right-4 bg-amber-400 text-white px-3 py-1 rounded-full text-sm font-medium">
+            Paid
+          </div>
+        )}
+
+      </div>
+      <div className="p-6">
+        <div className="flex justify-between items-start mb-2">
+          <h3 className="text-xl font-bold text-gray-900">{event.title}</h3>
+          <div className="flex items-center">
+            <Star className="h-4 w-4 text-yellow-400 fill-current" />
+            <span className="ml-1 text-sm font-medium text-gray-700">{event.rating}</span>
+            <span className="ml-1 text-sm text-gray-500">({event.reviews})</span>
+          </div>
+        </div>
+        <div className="flex items-center text-gray-600 mb-3">
+          <MapPin className="h-4 w-4 mr-1" />
+          <span>{event.location}</span>
+        </div>
+        <div className="mb-4">
+          <div className="flex items-center text-sm text-gray-600 mb-2">
+            <Calendar className="h-4 w-4 mr-1" />
+            <span>{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+          </div>
+          <div className="flex items-center text-sm text-gray-600">
+            <Clock className="h-4 w-4 mr-1" />
+            <span>{event.time}</span>
+          </div>
+        </div>
+        <div className="flex items-center justify-between mb-6">
+          <div className={`text-lg font-bold ${event.price === 0 ? 'text-green-600' : 'text-blue-600'}`}>
+            {event.price === 0 ? "Free" : `$${event.price}`}
+          </div>
+          <div className="text-sm text-gray-600">
+            {event.capacity - event.attendees} spots left
+          </div>
+        </div>
+        <div className="flex space-x-3">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onRegister(event);
+            }}
+            className="flex-1 bg-gradient-to-r from-purple-700 to-fuchsia-700 hover:from-purple-800 hover:to-fuchsia-800 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg"
+          >
+            <Plus className="h-5 w-5 mr-2" />
+            Register Now
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart(event);
+            }}
+            className="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-700 font-medium flex items-center"
+          >
+            <ShoppingCartIcon className="h-4 w-4 mr-1" />
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// 🔹 HomePage Component (now stable — defined outside App)
+const HomePage = ({
+  searchTerm,
+  setSearchTerm,
+  selectedCategory,
+  setSelectedCategory,
+  priceFilter,
+  setPriceFilter,
+  categories,
+  priceFilters,
+  filteredEvents,
+  events,
+  favorites,
+  setFavorites,
+  addNotification,
+  handleRegister,
+  handleAddToCart,
+  setSelectedEvent,
+  registrationSuccess,
+  setRegistrationSuccess,
+  aboutRef,
+  contactRef,
+  searchInputRef,
+  setCurrentView
+}) => (
+  <div className="bg-gradient-to-r  from-purple-800 via-fuchsia-800 to-purple-900 text-white relative overflow-hidden min-h-screen">
+    <div className="bg-gradient-to-r from-yellow-700 via-yellow-500 to-yellow-700 text-white relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div className="text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">Discover & Experience Amazing Events</h1>
+          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+            Find the perfect events for your interests, connect with like-minded people, and create unforgettable experiences.
+          </p>
+          <div className="max-w-xl mx-auto">
+            <div className="relative">
+              <input
+                ref={searchInputRef}
+                type="text"
+                placeholder="Search events, categories, or locations..."
+                className="w-full px-6 py-4 text-gray-900 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {/* Stats */}
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-13">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {[
+          { value: "10,000+", label: "Events Hosted", color: "text-purple-700 dark:text-purple-400" },
+          { value: "250,000+", label: "Happy Attendees", color: "text-fuchsia-700 dark:text-fuchsia-400" },
+          { value: "98%", label: "Satisfaction Rate", color: "text-purple-700 dark:text-purple-400" },
+          { value: "500+", label: "Event Organizers", color: "text-fuchsia-700 dark:text-fuchsia-400" }
+        ].map((stat, i) => (
+          <div key={i} className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center border border-gray-200 dark:border-gray-700">
+            <div className={`text-3xl font-extrabold ${stat.color}`}>{stat.value}</div>
+            <div className="text-gray-600 dark:text-gray-300 mt-2">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+        <h2 className="text-3xl font-bold text-white mb-4 md:mb-0">
+          {selectedCategory === "All" ? "Filter Events" : `${selectedCategory} Events`}
+        </h2>
+        <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
+          <div className="flex space-x-4">
+            <div className="relative">
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-4 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {categories.map(category => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+            </div>
+            <div className="relative">
+              <select
+                value={priceFilter}
+                onChange={(e) => setPriceFilter(e.target.value)}
+                className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-4 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {priceFilters.map(filter => (
+                  <option key={filter} value={filter}>{filter}</option>
+                ))}
+              </select>
+              <ChevronDown className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+            </div>
+          </div>
+          <div className="flex space-x-2">
+            <button className="bg-gray-100 hover:bg-gray-200 p-2 rounded-md">
+              <Filter className="h-5 w-5 text-gray-600" />
+            </button>
+            <button onClick={() => setCurrentView("organize")} className="bg-gradient-to-r from-purple-700 to-fuchsia-700 text-white p-2.5 rounded-xl shadow-lg hover:shadow-xl">
+              <Plus className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      </div>
+      {registrationSuccess && (
+        <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center">
+          <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+          <div>
+            <p className="font-medium text-green-800">
+              Successfully registered for "{registrationSuccess.eventName}" at {registrationSuccess.registrationTime}
+            </p>
+            <p className="text-green-700 text-sm mt-1">Check your email for confirmation details.</p>
+          </div>
+          <button onClick={() => setRegistrationSuccess(null)} className="ml-auto text-green-500 hover:text-green-700">
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+      )}
+      {selectedCategory === "All" && (
+        <div className="mb-12">
+          <h3 className="text-2xl font-bold text-white mb-6">Featured Events</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {events.filter(event => event.featured).map(event => (
+              <FeaturedEventCard 
+                key={event.id} 
+                event={event} 
+                onRegister={handleRegister} 
+                onAddToCart={handleAddToCart} 
+                isFavorited={favorites.includes(event.id)} 
+                onToggleFavorite={(id) => {
+                  setFavorites(prev => {
+                    const isFav = prev.includes(id);
+                    const newFavs = isFav
+                      ? prev.filter(i => i !== id)
+                      : [...prev, id];
+                    const event = events.find(e => e.id === id);
+                    const message = isFav
+                      ? `Removed "${event.title}" from favorites`
+                      : `Added "${event.title}" to favorites`;
+                    addNotification(message, isFav ? 'info' : 'success');
+                    return newFavs;
+                  });
+                }}
+                onViewDetails={() => setSelectedEvent(event)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+      
+      <h3 className="text-2xl font-bold text-white mb-6">All Events</h3>   
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        {filteredEvents.map(event => (
+          <EventCard 
+            key={event.id} 
+            event={event} 
+            onRegister={handleRegister} 
+            onAddToCart={handleAddToCart} 
+            isFavorited={favorites.includes(event.id)} 
+            onToggleFavorite={(id) => {
+              setFavorites(prev => {
+                const isFav = prev.includes(id);
+                const newFavs = isFav
+                  ? prev.filter(i => i !== id)
+                  : [...prev, id];
+                const event = events.find(e => e.id === id);
+                const message = isFav
+                  ? `Removed "${event.title}" from favorites`
+                  : `Added "${event.title}" to favorites`;
+                addNotification(message, isFav ? 'info' : 'success');
+                return newFavs;
+              });
+            }}
+            onViewDetails={() => setSelectedEvent(event)}
+          />
+        ))}
+      </div>
+      {filteredEvents.length === 0 && (
+        <div className="text-center py-12">
+          <Calendar className="mx-auto h-12 w-12 text-gray-400" />
+          <h3 className="mt-2 text-lg font-medium text-gray-900">No events found</h3>
+          <p className="mt-1 text-gray-500">Try adjusting your search or filter to find what you're looking for.</p>
+          <button onClick={() => { setSelectedCategory("All"); setPriceFilter("All"); setSearchTerm(""); }} className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm">
+            Reset Filters
+          </button>
+        </div>
+      )}
+    </div>
+    {/* About & Contact Sections */}
+    <div ref={aboutRef} className=" bg-gradient-to-r  from-purple-600 via-fuchsia-700 to-purple-700 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 mb-6">
+      <div className="text-center mb-16">
+        <h2 className="text-3xl font-bold text-gray-900">About EventPro</h2>
+        <p className="mt-4 text-xl text-white max-w-3xl mx-auto">
+          We're on a mission to connect people through shared experiences and unforgettable events.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="text-center p-6">
+          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100">
+            <Users className="h-8 w-8 text-blue-600" />
+          </div>
+          <h3 className="mt-4 text-xl font-bold text-gray-900">Community Focused</h3>
+          <p className="mt-2 text-white">
+            We believe in the power of bringing people together to share ideas, learn, and grow.
+          </p>
+        </div>
+        <div className="text-center p-6">
+          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+            <Target className="h-8 w-8 text-green-600" />
+          </div>
+          <h3 className="mt-4 text-xl font-bold text-gray-900">Quality Events</h3>
+          <p className="mt-2 text-white">
+            We curate high-quality events with verified organisers to ensure the best experience.
+          </p>
+        </div>
+        <div className="text-center p-6">
+          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-purple-100">
+            <Award className="h-8 w-8 text-purple-600" />
+          </div>
+          <h3 className="mt-4 text-xl font-bold text-gray-900">Trusted Platform</h3>
+          <p className="mt-2 text-white">
+            With over 250,000 satisfied attendees, we're the trusted choice for event discovery.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div ref={contactRef} className="bg-gradient-to-r  from-purple-600 via-fuchsia-600 to-purple-700 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 mb-4">
+      <div className="text-center mb-16">
+        <h2 className="text-3xl font-bold text-gray-900">Contact Us</h2>
+        <p className="mt-4 text-xl text-white max-w-3xl mx-auto">
+          Have questions or need assistance? Our team is here to help.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div>
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Get in Touch</h3>
+          <div className="space-y-6">
+            <div className="flex items-start">
+              <Map className="h-6 w-6 text-green-500 mt-1" />
+              <div className="ml-4">
+                <h4 className="text-lg font-medium text-gray-900">Address</h4>
+                <p className="mt-1 text-gray-200">
+                  123 Event Street<br />
+                  San Francisco, CA 94103<br />
+                  United States
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <Phone className="h-6 w-6 text-green-500 mt-1" />
+              <div className="ml-4">
+                <h4 className="text-lg font-medium text-gray-900">Phone</h4>
+                <p className="mt-1 text-gray-200">
+                  +1 (800) 123-4567<br />
+                  Mon-Fri, 9am-6pm PST
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start">
+              <Mail className="h-6 w-6 text-green-500 mt-1" />
+              <div className="ml-4">
+                <h4 className="text-lg font-medium text-gray-900">Email</h4>
+                <p className="mt-1 text-gray-200">
+                  support@eventpro.com<br />
+                  info@eventpro.com
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h3>
+          <form className="space-y-4">
+            <div>
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <input
+                type="text"
+                id="name"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Your name"
+              />
+            </div>
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <input
+                type="email"
+                id="email"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="your@email.com"
+              />
+            </div>
+            <div>
+              <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+              <input
+                type="text"
+                id="subject"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="What is this regarding?"
+              />
+            </div>
+            <div>
+              <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+              <textarea
+                id="message"
+                rows={4}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Your message..."
+              ></textarea>
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors duration-300"
+            >
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+// 🔹 Navigation (moved outside App)
+const Navigation = ({
+  currentView,
+  setCurrentView,
+  selectedEvent,
+  setSelectedEvent,
+  setCheckoutStep,
+  notifications,
+  setNotificationOpen,
+  notificationOpen,
+  favorites,
+  setFavorites,
+  setFavoritesOpen,
+  favoritesOpen,
+  cart,
+  setCart,
+  setCartOpen,
+  cartOpen,
+  user,
+  aboutRef,
+  contactRef,
+  isMenuOpen,
+  setIsMenuOpen,
+  addNotification 
+}) => (
+  <nav className="bg-gray-900 text-white shadow-sm border-b z-50 sticky top-0">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="flex justify-between items-center h-16">
+        <div className="flex items-center">
+          <div className="flex-shrink-0 flex items-center">
+            <Calendar className="h-8 w-8 text-purple-600" />
+            <span className="ml-2 text-xl font-bold text-white">EventPro</span>
+          </div>
+          <div className="hidden md:ml-10 md:flex md:space-x-8">
+            <button 
+              onClick={() => { 
+                setCurrentView("home"); 
+                setSelectedEvent(null); 
+                setCheckoutStep(0);
+              }}
+              className={`px-3 py-2 rounded-md text-sm font-medium ${currentView === "home" && !selectedEvent ? "text-blue-600 border-b-2 border-blue-600" : "text-white hover:text-blue-600"}`}
+            >
+              Events
+            </button>
+            <button 
+              onClick={() => { 
+                setCurrentView("dashboard"); 
+                setSelectedEvent(null); 
+                setCheckoutStep(0);
+              }}
+              className={`px-3 py-2 rounded-md text-sm font-medium ${currentView === "dashboard" ? "text-blue-600 border-b-2 border-blue-600" : "text-white hover:text-blue-600 "}`}
+            >
+              Dashboard
+            </button>
+            <button 
+              onClick={() => { 
+                setCurrentView("organize"); 
+                setSelectedEvent(null); 
+                setCheckoutStep(0);
+              }}
+              className={`px-3 py-2 rounded-md text-sm font-medium ${currentView === "organize" ? "text-blue-600 border-b-2 border-blue-600" : "text-white hover:text-blue-600"}`}
+            >
+              Organise Event
+            </button>
+           
+            <button 
+              onClick={() => {
+                // Always go to home first, then scroll
+                if (currentView !== "home") {
+                  setCurrentView("home");
+                }
+                // Trigger scroll regardless — will be handled in useEffect
+                setTimeout(() => {
+                  scrollToSection(aboutRef);
+                }, 100); // Slight delay to let DOM settle
+              }}
+              className={`px-3 py-2 rounded-md text-sm font-medium ${currentView === "home" ? "text-blue-600 border-b-2 border-blue-600" : "text-white hover:text-blue-600"}`}
+            >
+              About
+            </button>
+
+            <button 
+              onClick={() => {
+                if (currentView !== "home") {
+                  setCurrentView("home");
+                }
+                setTimeout(() => {
+                  scrollToSection(contactRef);
+                }, 100);
+              }}
+              className={`px-3 py-2 rounded-md text-sm font-medium ${currentView === "home" ? "text-blue-600 border-b-2 border-blue-600" : "text-white hover:text-blue-600"}`}
+            >
+              Contact
+            </button>
+          </div>
+        </div>
+        <div className="hidden md:flex items-center space-x-4">
+          <div className="relative">
+            <button 
+              onClick={() => {
+                setNotificationOpen(!notificationOpen);
+                setCartOpen(false);
+                setFavoritesOpen(false);
+              }}
+              className="text-yellow-400 hover:text-yellow-600 relative"
+              aria-label="Toggle notifications"
+            >
+              <Bell className="h-5 w-5" />
+              {notifications.filter(n => !n.read).length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                  {notifications.filter(n => !n.read).length}
+                </span>
+              )}
+            </button>
+            {notificationOpen && (
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 border max-h-96 overflow-y-auto">
+                <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+                  <h3 className="font-semibold text-gray-900">Notifications</h3>
+                  <div className="flex space-x-2">
+                    <button 
+                      onClick={() => {
+                        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+                      }} 
+                      className="text-xs text-blue-600 hover:text-blue-800"
+                    >
+                      Mark all as read
+                    </button>
+                    <button 
+                      onClick={() => {
+                        setNotifications([]);
+                      }} 
+                      className="text-xs text-gray-500 hover:text-gray-700"
+                    >
+                      Clear all
+                    </button>
+                  </div>
+                </div>
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center">
+                    <Bell className="mx-auto h-12 w-12 text-gray-400" />
+                    <p className="mt-2 text-gray-500">No notifications</p>
+                  </div>
+                ) : (
+                  <div>
+                    {notifications.map(notification => (
+                      <div key={notification.id} className={`p-4 ${!notification.read ? 'bg-blue-50' : 'hover:bg-gray-50'} border-b border-gray-100`}>
+                        <div className="flex">
+                          <div className="flex-shrink-0">
+                            {notification.type === "success" && <CheckCircle className="h-5 w-5 text-green-500" />}
+                            {notification.type === "info" && <LucideInfo className="h-5 w-5 text-blue-500" />} {/* ✅ Lucide */}
+                            {notification.type === "reminder" && <Calendar className="h-5 w-5 text-purple-500" />}
+                            {notification.type === "error" && <LucideAlertCircle className="h-5 w-5 text-red-500" />} {/* ✅ Lucide */}
+                          </div>
+                          <div className="ml-3 flex-1">
+                            <p className="text-sm text-gray-700">{notification.text}</p>
+                            <p className="text-xs text-gray-500 mt-1">{notification.time}</p>
+                          </div>
+                          {!notification.read && (
+                            <button 
+                              onClick={() => {
+                                setNotifications(prev => 
+                                  prev.map(n => n.id === notification.id ? { ...n, read: true } : n)
+                                );
+                              }} 
+                              className="ml-2 text-blue-600 hover:text-blue-800"
+                            >
+                              Mark read
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="p-3 text-center text-sm text-blue-600 hover:text-blue-800 border-t border-gray-200">
+                  View all notifications
+                </div>
+              </div>
+            )}
+          </div>
+          <div className="relative">
+            <button 
+              onClick={() => {
+                setFavoritesOpen(!favoritesOpen);
+                setCartOpen(false);
+                setNotificationOpen(false);
+              }}
+              className="text-red-500 hover:text-red-700 relative"
+              aria-label="Toggle favorites"
+            >
+              <Heart className={`h-5 w-5 ${favorites.length > 0 ? 'text-red-500 fill-current' : ''}`} />
+              {favorites.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                  {favorites.length}
+                </span>
+              )}
+            </button>
+            {favoritesOpen && (
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 border max-h-96 overflow-y-auto">
+                <div className="p-4 border-b border-gray-200">
+                  <h3 className="font-semibold text-gray-900">Favorites ({favorites.length})</h3>
+                </div>
+                {favorites.length === 0 ? (
+                  <div className="p-6 text-center">
+                    <Heart className="mx-auto h-12 w-12 text-gray-300" />
+                    <p className="mt-2 text-gray-500">No favorites yet</p>
+                    <p className="text-sm text-gray-400 mt-1">Click the ❤️ icon on events to save them here</p>
+                  </div>
+                ) : (
+                  <div>
+                    {favorites.map(favId => {
+                      const event = mockEvents.find(e => e.id === favId);
+                      if (!event) return null;
+                      return (
+                        <div key={favId} className="p-4 hover:bg-gray-50 border-b border-gray-100">
+                          <div className="flex">
+                            <img src={event.image} alt={event.title} className="w-12 h-12 rounded-lg object-cover" />
+                            <div className="ml-3 flex-1">
+                              <h4 className="font-medium text-gray-900 text-sm">{event.title}</h4>
+                              <div className="flex items-center text-xs text-gray-500 mt-1">
+                                <Calendar className="h-3 w-3 mr-1" />
+                                <span>{new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                              </div>
+                            </div>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setFavorites(prev => prev.filter(id => id !== favId));
+                                addNotification(`Removed "${event.title}" from favorites`, "info");
+                              }} 
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                <div 
+                  className="p-3 text-center text-sm text-blue-600 hover:text-blue-800 border-t border-gray-200 cursor-pointer"
+                  onClick={() => { 
+                    setCurrentView("home"); 
+                    setFavoritesOpen(false);
+                  }}
+                >
+                  Browse more events
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Cart */}
+          <div className="relative">
+            <button 
+              onClick={() => {
+                if (cart.length > 0) {
+                  setCartOpen(!cartOpen);
+                  setNotificationOpen(false);
+                  setFavoritesOpen(false);
+                  setCurrentView("home");
+                  setSelectedEvent(null);
+                  setCheckoutStep(0);
+                } else {
+                  setCartOpen(false);
+                }
+              }}
+              className="text-blue-500 hover:text-blue-700 relative"
+              aria-label="Toggle cart"
+            >
+              <ShoppingCartIcon className="h-5 w-5" />
+              {cart.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                  {cart.reduce((total, item) => total + item.tickets, 0)}
+                </span>
+              )}
+            </button>
+            {cartOpen && (
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 border max-h-96 overflow-y-auto">
+                <div className="p-4 border-b border-gray-200">
+                  <h3 className="font-semibold text-gray-900">Shopping Cart ({cart.reduce((total, item) => total + item.tickets, 0)} items)</h3>
+                </div>
+                {cart.length === 0 ? (
+                  <div className="p-6 text-center">
+                    <ShoppingCartIcon className="mx-auto h-12 w-12 text-gray-300" />
+                    <p className="mt-2 text-gray-500">Your cart is empty</p>
+                  </div>
+                ) : (
+                  <div>
+                    {cart.map(item => (
+                      <div key={item.id} className="p-4 hover:bg-gray-50 border-b border-gray-100">
+                        <div className="flex">
+                          <img src={item.image} alt={item.title} className="w-12 h-12 rounded-lg object-cover" />
+                          <div className="ml-3 flex-1">
+                            <h4 className="font-medium text-gray-900 text-sm">{item.title}</h4>
+                            <p className="text-xs text-gray-500 mt-1">
+                              {item.tickets} × ${item.price} = ${(item.price * item.tickets).toFixed(2)}
+                            </p>
+                          </div>
+                          <button 
+                            onClick={() => {
+                              setCart(prev => prev.filter(i => i.id !== item.id));
+                              addNotification(`Removed "${item.title}" from cart`, "info");
+                            }} 
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {cart.length > 0 && (
+                  <div className="p-4 bg-gray-50">
+                    <div className="flex justify-between font-bold mb-3">
+                      <span>Total:</span>
+                      <span>${getTotal(cart).toFixed(2)}</span>
+                    </div>
+                    <button 
+                      onClick={() => { 
+                        setCartOpen(false); 
+                        setCheckoutStep(0);
+                        setCurrentView("cart"); // Navigate to cart view
+                        setSelectedEvent(null); // ensure no detail page interferes
+                      }}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium"
+                    >
+                      View Cart & Checkout
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2">
+              <img src={user.avatar} alt={user.name} className="h-8 w-8 rounded-full" />
+              <span className="text-sm font-medium text-white hidden sm:inline">{user.name}</span>
+            </div>
+          </div>
+        </div>
+        <div className="md:hidden flex items-center">
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-gray-500 hover:text-gray-700">
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+      </div>
+    </div>
+    {isMenuOpen && (
+      <div className="md:hidden bg-white border-t">
+        <div className="px-2 pt-2 pb-3 space-y-1">
+          <button onClick={() => { setCurrentView("home"); setIsMenuOpen(false); setSelectedEvent(null); }} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 w-full text-left">
+            Events
+          </button>
+          <button onClick={() => { setCurrentView("dashboard"); setIsMenuOpen(false); }} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 w-full text-left">
+            Dashboard
+          </button>
+          <button onClick={() => { setCurrentView("organize"); setIsMenuOpen(false); }} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 w-full text-left">
+            Organize Event
+          </button>
+          <button 
+            onClick={() => {
+              if (currentView !== "home") {
+                setCurrentView("home");
+                // Give a tiny delay for HomePage to render before scrolling
+                setTimeout(() => {
+                  scrollToSection(aboutRef);
+                }, 100);
+              } else {
+                scrollToSection(aboutRef);
+              }
+              setIsMenuOpen(false);
+            }} 
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 w-full text-left"
+          >
+            About
+          </button>
+          <button 
+            onClick={() => {
+              if (currentView !== "home") {
+                setCurrentView("home");
+                setTimeout(() => {
+                  scrollToSection(contactRef);
+                }, 100);
+              } else {
+                scrollToSection(contactRef);
+              }
+              setIsMenuOpen(false);
+            }} 
+            className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 w-full text-left"
+          >
+            Contact
+          </button>
+          <div className="pt-4 pb-2 border-t border-gray-200">
+            <div className="flex items-center px-4">
+              <img src={user.avatar} alt={user.name} className="h-10 w-10 rounded-full" />
+              <div className="ml-3">
+                <div className="text-base font-medium text-gray-800">{user.name}</div>
+                <div className="text-sm font-medium text-gray-500">{user.email}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+  </nav>
+);
+
+// 🔹 Helper functions
+const getSubtotal = (cart) => cart.reduce((total, item) => total + (item.price * item.tickets), 0);
+const getTotal = (cart) => {
+  const subtotal = getSubtotal(cart);
+  const serviceFee = subtotal * 0.05;
+  const processingFee = 2.50;
+  return subtotal + serviceFee + processingFee;
+};
+
+const scrollToSection = (ref) => {
+  if (ref?.current) {
+    ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } else {
+    // Fallback: try again after a frame
+    requestAnimationFrame(() => {
+      if (ref?.current) {
+        ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
+};
+
+// 🔹 Main App
+const App = () => {
+  const [events, setEvents] = useState(mockEvents);
+  const [filteredEvents, setFilteredEvents] = useState(mockEvents);
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [priceFilter, setPriceFilter] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [currentView, setCurrentView] = useState("home");
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [draftToEdit, setDraftToEdit] = useState(null);
+  const [user] = useState({ 
+    name: "Alex Johnson", 
+    email: "alex.johnson@example.com",
+    avatar: "https://placehold.co/40x40/3b82f6/white?text=AJ",
+    favorites: [3] 
+  });
+  const [cart, setCart] = useState([]);
+  const [cartOpen, setCartOpen] = useState(false);
+  const [notifications, setNotifications] = useState([
+    { id: 1, text: "Your registration for Tech Innovation Summit is confirmed!", time: "2 hours ago", read: false, type: "success" },
+    { id: 2, text: "New event: Global Leadership Conference added to your interests", time: "1 day ago", read: true, type: "info" },
+    { id: 3, text: "Reminder: Music & Arts Festival is in 3 days", time: "2 days ago", read: true, type: "reminder" }
+  ]);
+  const [favorites, setFavorites] = useState([3]);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [favoritesOpen, setFavoritesOpen] = useState(false);
+  const [checkoutStep, setCheckoutStep] = useState(0);
+  const [checkoutData, setCheckoutData] = useState({
+    firstName: "Alex",
+    lastName: "Johnson",
+    email: "alex.johnson@example.com",
+    phone: "",
+    cardNumber: "",
+    expiry: "",
+    cvv: "",
+    billingAddress: "",
+    city: "",
+    zip: "",
+    country: "United States"
+  });
+  const [registrationSuccess, setRegistrationSuccess] = useState(null);
+  const [drafts, setDrafts] = useState([]); // state for drafts
+  const aboutRef = useRef(null);
+  const contactRef = useRef(null);
+  const searchInputRef = useRef(null);
+  
+
+  // 🔹 Filter events
+  useEffect(() => {
+    let result = [...events];
+    if (selectedCategory !== "All") {
+      result = result.filter(event => event.category === selectedCategory);
+    }
+    if (priceFilter === "Free") {
+      result = result.filter(event => event.price === 0);
+    } else if (priceFilter === "Paid") {
+      result = result.filter(event => event.price > 0);
+    }
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(event => 
+        event.title.toLowerCase().includes(term) ||
+        event.location.toLowerCase().includes(term) ||
+        event.category.toLowerCase().includes(term) ||
+        event.organizer.toLowerCase().includes(term)
+      );
+    }
+    setFilteredEvents(result);
+  }, [selectedCategory, priceFilter, searchTerm, events]);
+
+  // 🔹 Add notification
+  const addNotification = (text, type = "info") => {
+    const newNotification = {
+      id: Date.now(),
+      text,
+      time: "Just now",
+      read: false,
+      type
+    };
+    setNotifications(prev => [newNotification, ...prev]);
+  };
+
+  // 🔹 Handle registration
+  const handleRegister = (event) => {
+    setRegistrationSuccess({
+      eventId: event.id,
+      eventName: event.title,
+      registrationTime: new Date().toLocaleTimeString()
+    });
+    addNotification(`Successfully registered for "${event.title}"! Check your email for confirmation.`, "success");
+    setTimeout(() => setRegistrationSuccess(null), 5000);
+  };
+
+  // 🔹 Add to cart
+  const handleAddToCart = (event) => {
+    setCart(prev => {
+      const existing = prev.find(item => item.id === event.id);
+      if (existing) {
+        addNotification(`Added another ticket for "${event.title}"`, "info");
+        return prev.map(item =>
+          item.id === event.id ? { ...item, tickets: item.tickets + 1 } : item
+        );
+      } else {
+        addNotification(`Added "${event.title}" to your cart`, "success");
+        return [...prev, { ...event, tickets: 1 }];
+      }
+    });
+  };
+
+  // 🔹 Update cart quantity
+  const updateCart = (eventId, action) => {
+    setCart(prevCart => 
+      prevCart
+        .map(item => 
+          item.id === eventId 
+            ? { ...item, tickets: action === 'add' ? item.tickets + 1 : Math.max(1, item.tickets - 1) }
+            : item
+        )
+        .filter(item => item.tickets > 0)
+    );
+  };
+
+  // 🔹 Process checkout
+  const processCheckout = () => {
+    if (!checkoutData.firstName || !checkoutData.lastName || !checkoutData.email) {
+      addNotification("Please fill in all required fields", "error");
+      return;
+    }
+    if (checkoutData.cardNumber.replace(/\s/g, '').length < 16) {
+      addNotification("Please enter a valid card number", "error");
+      return;
+    }
+    setCheckoutStep(3);
+    addNotification("Your order has been confirmed! Check your email for details.", "success");
+    setTimeout(() => {
+      setCart([]);
+      setCheckoutStep(0);
+    }, 3000);
+  };
+
+  // 🔹 Update checkout data
+  const updateCheckoutData = (field, value) => {
+    setCheckoutData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const EventDetailPage = () => {
+    if (!selectedEvent) return null;
+    return (
+      <div className="bg-gray-50 min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <button onClick={() => setSelectedEvent(null)} className="mb-6 flex items-center text-blue-600 hover:text-blue-800">
+            <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
+            Back to events
+          </button>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <img src={selectedEvent.image} alt={selectedEvent.title} className="w-full h-64 md:h-80 object-cover" />
+                <div className="p-8">
+                  <div className="flex justify-between items-start mb-6">
+                    <div>
+                      <span className="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full mb-4">
+                        {selectedEvent.category}
+                      </span>
+                      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{selectedEvent.title}</h1>
+                    </div>
+                    <div className="flex items-center">
+                      <Star className="h-6 w-6 text-yellow-400 fill-current mr-2" />
+                      <span className="text-xl font-bold text-gray-900">{selectedEvent.rating}</span>
+                      <span className="ml-2 text-gray-600">({selectedEvent.reviews} reviews)</span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="flex items-center">
+                      <Calendar className="h-5 w-5 text-blue-600 mr-3" />
+                      <div>
+                        <div className="text-sm text-gray-500">Date</div>
+                        <div className="font-medium">{new Date(selectedEvent.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <Clock className="h-5 w-5 text-blue-600 mr-3" />
+                      <div>
+                        <div className="text-sm text-gray-500">Time</div>
+                        <div className="font-medium">{selectedEvent.time}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center">
+                      <MapPin className="h-5 w-5 text-blue-600 mr-3" />
+                      <div>
+                        <div className="text-sm text-gray-500">Location</div>
+                        <div className="font-medium">{selectedEvent.location}</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Event</h2>
+                    <p className="text-gray-600 leading-relaxed">{selectedEvent.description}</p>
+                    <div className="mt-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">What to Expect</h3>
+                      <ul className="space-y-2 text-gray-600">
+                        <li className="flex items-start">
+                          <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <span>Keynote presentations from industry leaders</span>
+                        </li>
+                        <li className="flex items-start">
+                          <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <span>Interactive workshops and hands-on sessions</span>
+                        </li>
+                        <li className="flex items-start">
+                          <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <span>Networking opportunities with professionals</span>
+                        </li>
+                        <li className="flex items-start">
+                          <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <span>Access to exclusive resources and materials</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Organizer</h2>
+                    <div className="flex items-center">
+                      <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
+                      <div className="ml-4">
+                        <h3 className="text-lg font-semibold text-gray-900">{selectedEvent.organizer}</h3>
+                        <p className="text-gray-600">Verified Organizer • 15 events hosted</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Venue</h2>
+                    <div className="bg-gray-100 rounded-lg p-4">
+                      <div className="flex items-start">
+                        <MapPin className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+                        <div>
+                          <p className="font-medium text-gray-900">{selectedEvent.location}</p>
+                          <p className="text-gray-600 mt-1">Full address will be provided upon registration</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mb-8">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Event Tags</h2>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedEvent.tags.map(tag => (
+                        <span key={tag} className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="lg:col-span-1">
+              <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
+                <div className="text-center mb-6">
+                  <div className={`text-3xl font-bold ${selectedEvent.price === 0 ? 'text-green-600' : 'text-blue-600'} mb-2`}>
+                    {selectedEvent.price === 0 ? "Free" : `$${selectedEvent.price}`}
+                  </div>
+                  <div className="text-gray-600">
+                    {selectedEvent.capacity - selectedEvent.attendees} spots left
+                  </div>
+                </div>
+                <div className="mb-6">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5">
+                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${(selectedEvent.attendees / selectedEvent.capacity) * 100}%` }}></div>
+                  </div>
+                  <div className="flex justify-between text-sm text-gray-600 mt-1">
+                    <span>0</span>
+                    <span>{selectedEvent.capacity}</span>
+                  </div>
+                </div>
+                <div className="space-y-3 mb-6">
+                  <button
+                    onClick={() => handleRegister(selectedEvent)}
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white py-4 px-4 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg"
+                  >
+                    Register Now
+                  </button>
+                  <button
+                    onClick={() => handleAddToCart(selectedEvent)}
+                    className="w-full bg-white hover:bg-gray-50 text-gray-700 py-3 px-4 border border-gray-300 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center"
+                  >
+                    <ShoppingCartIcon className="h-5 w-5 mr-2" />
+                    Add to Cart
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setFavorites(prev => {
+                        const isFav = prev.includes(selectedEvent.id);
+                        return isFav
+                          ? prev.filter(id => id !== selectedEvent.id)
+                          : [...prev, selectedEvent.id];
+                      });
+                      const message = favorites.includes(selectedEvent.id)
+                        ? `Removed "${selectedEvent.title}" from favorites`
+                        : `Added "${selectedEvent.title}" to favorites`;
+                      addNotification(message, favorites.includes(selectedEvent.id) ? 'info' : 'success');
+                    }}
+                    className={`w-full flex items-center justify-center py-3 px-4 rounded-lg transition-colors ${
+                      favorites.includes(selectedEvent.id) 
+                        ? 'bg-red-50 text-red-600 border border-red-200' 
+                        : 'border border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Heart className={`h-5 w-5 mr-2 ${favorites.includes(selectedEvent.id) ? 'fill-current text-red-500' : 'text-gray-500'}`} />
+                    {favorites.includes(selectedEvent.id) ? 'Added to Favorites' : 'Add to Favorites'}
+                  </button>
+                  <button className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    <Share2 className="h-5 w-5 mr-2" />
+                    Share Event
+                  </button>
+                </div>
+                <div className="pt-6 border-t border-gray-200">
+                  <h3 className="font-semibold text-gray-900 mb-4">Event Policies</h3>
+                  <ul className="space-y-2 text-sm text-gray-600">
+                    <li className="flex items-start">
+                      <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>100% money-back guarantee if canceled 14 days before event</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>Free transfers to another attendee</span>
+                    </li>
+                    <li className="flex items-start">
+                      <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <span>Includes lunch and refreshments</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const DashboardPage = ({ drafts = [], setDrafts, addNotification, setCurrentView }) => (
+    <div className="bg-gradient-to-r  from-purple-800 via-fuchsia-800 to-purple-900 min-h-screen">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-amber-500">Welcome back, {user.name}!</h1>
+          <p className="text-white mt-2">Manage your events, registrations, and preferences</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-slate-800 rounded-xl shadow p-6">
+            <div className="flex items-center">
+              <div className="p-3 bg-blue-200 rounded-lg">
+                <Calendar className="h-6 w-6 text-blue-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-blue-600">Upcoming Events</p>
+                <p className="text-2xl font-bold text-white">3</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-slate-800 rounded-xl shadow p-6">
+            <div className="flex items-center">
+              <div className="p-3 bg-green-100 rounded-lg">
+                <Check className="h-6 w-6 text-green-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-blue-600">Completed Events</p>
+                <p className="text-2xl font-bold text-white">12</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-slate-800 rounded-xl shadow p-6">
+            <div className="flex items-center">
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Users className="h-6 w-6 text-purple-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-blue-600">Total Attendees</p>
+                <p className="text-2xl font-bold text-white">247</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-slate-800 rounded-xl shadow p-6">
+            <div className="flex items-center">
+              <div className="p-3 bg-yellow-100 rounded-lg">
+                <Star className="h-6 w-6 text-yellow-600" />
+              </div>
+              <div className="ml-4">
+                <p className="text-sm font-medium text-blue-600">Avg. Rating</p>
+                <p className="text-2xl font-bold text-white">4.7</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="bg-slate-800 rounded-xl shadow mb-8">
+              <div className="px-6 py-4 border-b border-slate-950">
+                <h2 className="text-xl font-bold text-white">Upcoming Events</h2>
+              </div>
+              <div className="divide-y divide-slate-950">
+                {events.slice(0, 2).map(event => (
+                  <div key={event.id} className="p-6 hover:bg-gray-700">
+                    <div className="flex">
+                      <img src={event.image} alt={event.title} className="w-16 h-16 rounded-lg object-cover" />
+                      <div className="ml-4 flex-1">
+                        <div className="flex justify-between">
+                          <h3 className="font-semibold text-white">{event.title}</h3>
+                          <span className="text-sm text-slate-400">{event.category}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-slate-400 mt-1">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          <span>{new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                          <span className="mx-2">•</span>
+                          <MapPin className="h-4 w-4 mr-1" />
+                          <span>{event.location}</span>
+                        </div>
+                        <div className="mt-3 flex items-center justify-between">
+                          <span className={`text-lg font-bold ${event.price === 0 ? 'text-green-600' : 'text-blue-600'}`}>
+                            {event.price === 0 ? "Free" : `$${event.price}`}
+                          </span>
+                          <div className="flex space-x-2">
+                            <button 
+                              onClick={() => setSelectedEvent(event)} 
+                              className="text-blue-600 hover:text-blue-800 font-medium text-sm"
+                            >
+                              Details
+                            </button>
+                            <button 
+                              onClick={() => {
+                                setFavorites(prev => prev.includes(event.id)
+                                  ? prev.filter(id => id !== event.id)
+                                  : [...prev, event.id]
+                                );
+                              }} 
+                              className="text-gray-500 hover:text-red-500"
+                            >
+                              <Heart className={`h-4 w-4 ${favorites.includes(event.id) ? 'fill-current text-red-500' : ''}`} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-slate-800 rounded-xl shadow">
+              <div className="px-6 py-4 border-b border-slate-950">
+                <h2 className="text-xl font-bold text-white">Event History</h2>
+              </div>
+              <div className="divide-y divide-slate-950">
+                {events.slice(2, 4).map(event => (
+                  <div key={event.id} className="p-6 hover:bg-gray-700">
+                    <div className="flex">
+                      <div className="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center">
+                        <Calendar className="h-8 w-8 text-gray-500" />
+                      </div>
+                      <div className="ml-4 flex-1">
+                        <div className="flex justify-between">
+                          <h3 className="font-semibold text-white">{event.title}</h3>
+                          <span className="text-sm text-slate-400">Completed</span>
+                        </div>
+                        <div className="flex items-center text-sm text-slate-400 mt-1">
+                          <Calendar className="h-4 w-4 mr-1" />
+                          <span>{new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                        </div>
+                        <div className="mt-3 flex items-center justify-between">
+                          <div className=" text-white flex items-center">
+                            <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
+                            <span className="font-medium">{event.rating}</span>
+                          </div>
+                          <button className="text-blue-600 hover:text-blue-800 font-medium text-sm">
+                            View Certificate
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Draft Events Section — Styled to match */}
+            {drafts.length > 0 && (
+              <div className="bg-slate-800 rounded-xl shadow mt-8">
+                <div className="px-6 py-4 border-b border-slate-950">
+                  <h2 className="text-xl font-bold text-white">Draft Events ({drafts.length})</h2>
+                </div>
+                <div className="divide-y divide-gray-200">
+                  {drafts.map(d => (
+                    <div key={d.id} className="p-6 hover:bg-gray-700">
+                      <div className="flex items-start">
+                        <div className="w-16 h-16 rounded-lg bg-gray-100 flex items-center justify-center">
+                          <Edit3 className="h-6 w-6 text-gray-500" />
+                        </div>
+                        <div className="ml-4 flex-1">
+                          <div className="flex justify-between">
+                            <h3 className="font-semibold text-white">
+                              {d.title || 'Untitled Draft'}
+                            </h3>
+                            <span className="text-xs text-slate-400 font-medium">
+                              {new Date(d.createdAt).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                          <div className="mt-2 flex space-x-2">
+                            <button
+                              onClick={() => {
+                                setDraftToEdit(d); // set the draft to edit
+                                // Optional: pre-fill form and go to organize page
+                                setCurrentView("organize");
+                                // In a real app, you'd pass `d` to pre-fill the form
+                              }}
+                              className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                            >
+                              Resume Editing
+                            </button>
+                            <span className="text-xs text-slate-400">•</span>
+                            <button
+                              onClick={() => {
+                                setDrafts(prev => prev.filter(draft => draft.id !== d.id));
+                                addNotification(`Draft "${d.title || 'Untitled'}" deleted`, "info");
+                              }}
+                              className="text-sm text-slate-400 hover:text-red-600"
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                ))}
+              </div>
+            </div>  
+            )}
+          </div>
+          <div className="space-y-8">
+            <div className="bg-slate-800 rounded-xl shadow">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h2 className="text-xl font-bold text-white">Your Favorites</h2>
+              </div>
+              <div className="divide-y divide-gray-200">
+                {favorites.length === 0 ? (
+                  <div className="p-6 text-center">
+                    <Heart className="mx-auto h-12 w-12 text-gray-300" />
+                    <p className="mt-2 text-gray-500">No favorites yet</p>
+                    <p className="text-sm text-gray-400 mt-1">Click the ❤️ icon on events to save them</p>
+                  </div>
+                ) : (
+                  favorites.slice(0, 3).map(favId => {
+                    const event = events.find(e => e.id === favId);
+                    if (!event) return null;
+                    return (
+                      <div key={favId} className="p-4 hover:bg-gray-700">
+                        <div className="flex">
+                          <img src={event.image} alt={event.title} className="w-12 h-12 rounded-lg object-cover" />
+                          <div className="ml-3">
+                            <h4 className="font-medium text-white text-sm">{event.title}</h4>
+                            <div className="flex items-center text-xs text-slate-400 mt-1">
+                              <Calendar className="h-3 w-3 mr-1" />
+                              <span>{new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                            </div>
+                          </div>
+                          <button onClick={() => {
+                            setFavorites(prev => prev.filter(id => id !== favId));
+                            addNotification(`Removed "${event.title}" from favorites`, "info");
+                          }} className="ml-auto text-red-500 hover:text-red-700">
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+                {favorites.length > 3 && (
+                  <button className="w-full py-3 text-center text-blue-600 hover:text-blue-800 font-medium text-sm">
+                    View all {favorites.length} favorites
+                  </button>
+                )}
+              </div>
+            </div>
+            <div className="bg-slate-800 rounded-xl shadow">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h2 className="text-xl font-bold text-white">Quick Actions</h2>
+              </div>
+              <div className="text-white p-4 space-y-3">
+                <button onClick={() => setCurrentView("organize")} className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                  <Plus className="h-5 w-5 mr-2" />
+                  Create New Event
+                </button>
+                <button className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                  <Edit3 className="h-5 w-5 mr-2" />
+                  Edit Profile
+                </button>
+                <button className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                  <Settings className="h-5 w-5 mr-2" />
+                  Account Settings
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // 🔹 OrganizeEventPage with Multi-step Form
+  const OrganizeEventPage = ({
+    user,
+    addNotification,
+    setDrafts,
+    drafts,
+    setEvents,
+    setCurrentView
+  }) => {
+    const [activeStep, setActiveStep] = useState(0); // 0: Event Details, 1: Schedule, 2: Venue, 3: Tickets, 4: Publish
+    const [eventForm, setEventForm] = useState(() => {
+      // Initialize from draft if provided
+      if (draftToEdit) {
+        return {
+          title: draftToEdit.title || '',
+          category: draftToEdit.category || 'Technology',
+          eventType: draftToEdit.eventType || 'Conference',
+          description: draftToEdit.description || '',
+          startDate: draftToEdit.startDate || '',
+          startTime: draftToEdit.startTime || '',
+          location: draftToEdit.location || '',
+          venueName: draftToEdit.venueName || '',
+          venueAddress: draftToEdit.venueAddress || '',
+          venueCapacity: draftToEdit.venueCapacity || '',
+          ticketPrice: draftToEdit.ticketPrice || 0,
+          maxTickets: draftToEdit.maxTickets || 100,
+          imageFile: null, // Can't restore file blobs easily — leave null
+          imagePreview: draftToEdit.imagePreview || draftToEdit.image || null,
+        };
+      }
+      return {
+        title: '',
+        category: 'Technology',
+        eventType: 'Conference',
+        description: '',
+        startDate: '',
+        startTime: '',
+        location: '',
+        venueName: '',
+        venueAddress: '',
+        venueCapacity: '',
+        ticketPrice: 0,
+        maxTickets: 100,
+        imageFile: null,
+        imagePreview: null,
+      };
+    });
+
+    useEffect(() => {
+      return () => {
+        // Optional: clear draft-to-edit when unmounting (e.g., navigating away)
+        if (setDraftToEdit) setDraftToEdit(null);
+      };
+    }, [setDraftToEdit]);
+
+    const fileInputRef = useRef(null);
+
+    const handleImageUpload = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        setEventForm(prev => ({
+          ...prev,
+          imageFile: file,
+          imagePreview: URL.createObjectURL(file)
+        }));
+      }
+    };
+
+    const handleInputChange = (e) => {
+      const { name, value } = e.target;
+      setEventForm(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleNextStep = () => {
+      if (activeStep < 4) {
+        setActiveStep(activeStep + 1);
+      }
+    };
+
+    const handlePreviousStep = () => {
+      if (activeStep > 0) {
+        setActiveStep(activeStep - 1);
+      }
+    };
+
+    const handleSaveDraft = () => {
+      const now = new Date().toISOString();
+      
+      if (draftToEdit) {
+        // Update existing draft
+        setDrafts(prev => prev.map(d => 
+          d.id === draftToEdit.id 
+            ? { ...d, ...eventForm, updatedAt: now } 
+            : d
+        ));
+        addNotification(`Draft "${eventForm.title || 'Untitled'}" updated!`, "success");
+      } else {
+        // Create new draft
+        const newDraft = {
+          ...eventForm,
+          id: Date.now(),
+          status: 'draft',
+          createdAt: now,
+          updatedAt: now
+        };
+        setDrafts(prev => [...prev, newDraft]);
+        addNotification("Event draft saved successfully!", "success");
+      }
+      
+      // Optional: clear draftToEdit and go to dashboard
+      // setDraftToEdit(null);
+      // setCurrentView("dashboard");
+    };
+
+    const handlePublish = () => {
+      // 🔹 Validation
+      if (!eventForm.title.trim()) {
+        addNotification("Event title is required", "error");
+        return;
+      }
+      if (!eventForm.startDate || !eventForm.startTime) {
+        addNotification("Event date and time are required", "error");
+        return;
+      }
+      if (!eventForm.venueName || !eventForm.venueAddress) {
+        addNotification("Venue details are required", "error");
+        return;
+      }
+      if (isNaN(eventForm.ticketPrice) || eventForm.ticketPrice < 0) {
+        addNotification("Ticket price must be a valid number ≥ 0", "error");
+        return;
+      }
+      if (!eventForm.venueCapacity || parseInt(eventForm.venueCapacity) <= 0) {
+        addNotification("Valid venue capacity is required", "error");
+        return;
+      }
+
+      // Simulate publishing
+      const newEvent = {
+        id: Date.now(),
+        title: eventForm.title,
+        date: eventForm.startDate,
+        time: eventForm.startTime,
+        location: eventForm.location || eventForm.venueAddress,
+        category: eventForm.category,
+        price: parseFloat(eventForm.ticketPrice) || 0,
+        capacity: parseInt(eventForm.venueCapacity) || 100,
+        attendees: 0,
+        description: eventForm.description || "No description provided.",
+        image: eventForm.imagePreview || `https://placehold.co/400x250/6366f1/white?text=${encodeURIComponent(eventForm.title)}`,
+        organizer: user.name,
+        featured: false,
+        rating: 0,
+        reviews: 0,
+        tags: [],
+        eventType: eventForm.eventType,
+      };
+
+      // Add to events list
+      setEvents(prev => [...prev, newEvent]);
+
+      // 🔹 If editing a draft, remove it after publishing
+      if (draftToEdit) {
+        setDrafts(prev => prev.filter(d => d.id !== draftToEdit.id));
+        addNotification(`Draft published and removed. Event "${newEvent.title}" is live!`, "success");
+      } else {
+        addNotification(`Event "${newEvent.title}" published successfully!`, "success");
+      }      
+      // Reset form and navigate back
+      setEventForm({
+        title: '',
+        category: 'Technology',
+        eventType: 'Conference',
+        description: '',
+        startDate: '',
+        startTime: '',
+        location: '',
+        venueName: '',
+        venueAddress: '',
+        venueCapacity: '',
+        ticketPrice: 0,
+        maxTickets: 100,
+        imageFile: null,
+        imagePreview: null,
+      });
+      setActiveStep(0);
+      setDraftToEdit(null); // clear after publish
+      setCurrentView("dashboard");
+    };
+
+    const renderStepContent = () => {
+      switch (activeStep) {
+        case 0:
+          return (
+            <>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Event Title *
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={eventForm.title}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter event title"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Category *
+                    </label>
+                    <select
+                      name="category"
+                      value={eventForm.category}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      {categories.filter(c => c !== "All").map(category => (
+                        <option key={category} value={category}>{category}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Event Type
+                    </label>
+                    <select
+                      name="eventType"
+                      value={eventForm.eventType}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    >
+                      <option>Conference</option>
+                      <option>Workshop</option>
+                      <option>Seminar</option>
+                      <option>Webinar</option>
+                      <option>Networking</option>
+                      <option>Festival</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Event Description
+                  </label>
+                  <textarea
+                    name="description"
+                    value={eventForm.description}
+                    onChange={handleInputChange}
+                    rows={4}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Describe your event..."
+                  ></textarea>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Event Date *
+                  </label>
+                  <input
+                    type="date"
+                    name="startDate"
+                    value={eventForm.startDate}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Start Time *
+                  </label>
+                  <input
+                    type="time"
+                    name="startTime"
+                    value={eventForm.startTime}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Event Image
+                  </label>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      onChange={handleImageUpload}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <div onClick={() => fileInputRef.current?.click()} className="cursor-pointer">
+                      {eventForm.imagePreview ? (
+                        <img src={eventForm.imagePreview} alt="Preview" className="mx-auto h-32 w-auto object-contain rounded" />
+                      ) : (
+                        <>
+                          <UploadCloud className="mx-auto h-12 w-12 text-gray-400" />
+                          <p className="mt-2 text-sm text-gray-600">
+                            <span className="font-medium text-blue-600 hover:text-blue-500">Upload a file</span> or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          );
+        case 1:
+          return (
+            <>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Location (City/Region)
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={eventForm.location}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="e.g., San Francisco, CA"
+                  />
+                </div>
+              </div>
+            </>
+          );
+        case 2:
+          return (
+            <>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Venue Name *
+                  </label>
+                  <input
+                    type="text"
+                    name="venueName"
+                    value={eventForm.venueName}
+                    onChange={handleInputChange}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter venue name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Venue Address *
+                  </label>
+                  <textarea
+                    name="venueAddress"
+                    value={eventForm.venueAddress}
+                    onChange={handleInputChange}
+                    rows={3}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter full venue address"
+                  ></textarea>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Venue Capacity *
+                  </label>
+                  <input
+                    type="number"
+                    name="venueCapacity"
+                    value={eventForm.venueCapacity}
+                    onChange={handleInputChange}
+                    min="1"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="e.g., 200"
+                  />
+                </div>
+              </div>
+            </>
+          );
+        case 3:
+          return (
+            <>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ticket Price *
+                  </label>
+                  <div className="flex items-center">
+                    <span className="text-gray-600 mr-2">$</span>
+                    <input
+                      type="number"
+                      name="ticketPrice"
+                      value={eventForm.ticketPrice}
+                      onChange={handleInputChange}
+                      min="0"
+                      step="0.01"
+                      className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="0.00"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Enter 0 for free events</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Max Tickets (optional)
+                  </label>
+                  <input
+                    type="number"
+                    name="maxTickets"
+                    value={eventForm.maxTickets}
+                    onChange={handleInputChange}
+                    min="1"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="100"
+                  />
+                </div>
+              </div>
+            </>
+          );
+        case 4:
+          return (
+            <>
+              <div className="space-y-6">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-medium text-blue-900 mb-2">Review Your Event</h3>
+                  <p className="text-blue-800 text-sm">
+                    Please review all details. You can edit after publishing.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-medium text-gray-900">Title</h4>
+                    <p className="text-gray-600">{eventForm.title || "— Not set —"}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Date & Time</h4>
+                    <p className="text-gray-600">
+                      {eventForm.startDate ? `${new Date(eventForm.startDate).toLocaleDateString()} at ${eventForm.startTime}` : "— Not set —"}
+                    </p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Venue</h4>
+                    <p className="text-gray-600">{eventForm.venueName || "— Not set —"}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Capacity</h4>
+                    <p className="text-gray-600">{eventForm.venueCapacity || "— Not set —"}</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">Price</h4>
+                    <p className="text-gray-600">${parseFloat(eventForm.ticketPrice).toFixed(2)}</p>
+                  </div>
+                </div>
+                {eventForm.imagePreview && (
+                  <div>
+                    <h4 className="font-medium text-gray-900">Event Image</h4>
+                    <img src={eventForm.imagePreview} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded-lg" />
+                  </div>
+                )}
+              </div>
+            </>
+          );
+        default:
+          return <div>Unknown Step</div>;
+      }
+    };
+
+    return (
+      <div className="bg-gray-50 min-h-screen">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="mb-8">
+            <button onClick={() => setCurrentView("dashboard")} className="mb-4 flex items-center text-blue-600 hover:text-blue-800">
+              <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
+              Back to dashboard
+            </button>
+            <h1 className="text-3xl font-bold text-gray-900">Create New Event</h1>
+            <p className="text-gray-600 mt-2">Fill in the details to create your event</p>
+          </div>
+          <div className="bg-white rounded-2xl shadow-lg">
+            <div className="border-b border-gray-200">
+              <nav className="flex space-x-8 px-6">
+                {['Event Details', 'Location', 'Venue', 'Tickets', 'Publish'].map((item, index) => (
+                  <button
+                    key={item}
+                    onClick={() => setActiveStep(index)}
+                    className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                      index === activeStep 
+                        ? 'border-blue-500 text-blue-600' 
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </nav>
+            </div>
+            <div className="p-6">
+              {renderStepContent()}
+              <div className="flex justify-between pt-6">
+                <div className="flex space-x-4">
+                  {activeStep > 0 && (
+                    <button
+                      onClick={handlePreviousStep}
+                      className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium"
+                    >
+                      Previous
+                    </button>
+                  )}
+                  {activeStep < 4 && (
+                    <button
+                      onClick={handleNextStep}
+                      className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium"
+                    >
+                      Next
+                    </button>
+                  )}
+                </div>
+                <div className="flex space-x-4">
+                  <button
+                    onClick={handleSaveDraft}
+                    className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium"
+                  >
+                    Save Draft
+                  </button>
+                  {activeStep === 4 && (
+                    <button
+                      onClick={handlePublish}
+                      className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium"
+                    >
+                      Publish Event
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const CartPage = () => (
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <button 
+            onClick={() => { 
+              setSelectedEvent(null); 
+              setCheckoutStep(0);
+              setCurrentView("home"); // Navigate back to Events/Home 
+            }} 
+            className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
+          >
+            <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
+            Back to events
+          </button>
+          <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+          <p className="text-gray-600 mt-2">Review your selections before checkout</p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="bg-white rounded-2xl shadow-lg">
+              <div className="border-b border-gray-200 px-6 py-4">
+                <h2 className="text-xl font-bold text-gray-900">Event Selections ({cart.length})</h2>
+              </div>
+              {cart.length === 0 ? (
+                <div className="p-12 text-center">
+                  <ShoppingCartIcon className="mx-auto h-16 w-16 text-gray-400" />
+                  <h3 className="mt-4 text-xl font-medium text-gray-900">Your cart is empty</h3>
+                  <p className="mt-2 text-gray-600">Browse events and add some to your cart</p>
+                  <button 
+                    onClick={() => { 
+                      setCurrentView("home"); 
+                      setCheckoutStep(0); 
+                    }} 
+                    className="mt-6 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium"
+                  >
+                    Browse Events
+                  </button>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-200">
+                  {cart.map(item => (
+                    <div key={item.id} className="p-6">
+                      <div className="flex">
+                        <img src={item.image} alt={item.title} className="w-20 h-20 rounded-lg object-cover" />
+                        <div className="ml-4 flex-1">
+                          <div className="flex justify-between">
+                            <h3 className="font-semibold text-gray-900">{item.title}</h3>
+                            <button 
+                              onClick={() => {
+                                setCart(prev => prev.filter(i => i.id !== item.id));
+                                addNotification(`Removed "${item.title}" from cart`, "info");
+                              }} 
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </button>
+                          </div>
+                          <div className="flex items-center text-sm text-gray-600 mt-1">
+                            <Calendar className="h-4 w-4 mr-1" />
+                            <span>{new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                            <span className="mx-2">•</span>
+                            <span>{item.category}</span>
+                          </div>
+                          <div className="mt-4 flex items-center">
+                            <div className="flex items-center border border-gray-300 rounded-lg">
+                              <button 
+                                onClick={() => updateCart(item.id, 'subtract')} 
+                                className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                              >
+                                -
+                              </button>
+                              <span className="px-3 py-1 min-w-[2rem] text-center">{item.tickets}</span>
+                              <button 
+                                onClick={() => updateCart(item.id, 'add')} 
+                                className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <div className="ml-4 text-lg font-bold text-blue-600">
+                              ${(item.price * item.tickets).toFixed(2)}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Subtotal</span>
+                  <span className="font-medium">${getSubtotal(cart).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Service Fee (5%)</span>
+                  <span className="font-medium">${(getSubtotal(cart) * 0.05).toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Processing Fee</span>
+                  <span className="font-medium">$2.50</span>
+                </div>
+                <div className="flex justify-between pt-3 border-t border-gray-200">
+                  <span className="font-bold text-gray-900">Total</span>
+                  <span className="font-bold text-lg text-blue-600">
+                    ${getTotal(cart).toFixed(2)}
+                  </span>
+                </div>
+              </div>
+              {cart.length > 0 && (
+                <button 
+                  onClick={() => setCheckoutStep(1)} 
+                  className="w-full mt-6 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white py-4 px-4 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg"
+                >
+                  Proceed to Checkout
+                </button>
+              )}
+            </div>
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <h3 className="font-semibold text-gray-900 mb-3">Need Help?</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Contact our support team for assistance with your registration.
+              </p>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center">
+                  <Mail className="h-4 w-4 text-blue-600 mr-2" />
+                  <span>support@eventpro.com</span>
+                </div>
+                <div className="flex items-center">
+                  <Phone className="h-4 w-4 text-blue-600 mr-2" />
+                  <span>+1 (800) 123-4567</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const CheckoutDetails = () => (
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <button onClick={() => setCheckoutStep(0)} className="mb-4 flex items-center text-blue-600 hover:text-blue-800">
+            <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
+            Back to cart
+          </button>
+          <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
+          <p className="text-gray-600 mt-2">Enter your details to complete your purchase</p>
+        </div>
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Contact Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  First Name *
+                </label>
+                <input
+                  type="text"
+                  value={checkoutData.firstName}
+                  onChange={(e) => updateCheckoutData('firstName', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter first name"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Last Name *
+                </label>
+                <input
+                  type="text"
+                  value={checkoutData.lastName}
+                  onChange={(e) => updateCheckoutData('lastName', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter last name"
+                />
+              </div>
+            </div>
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email Address *
+              </label>
+              <input
+                type="email"
+                value={checkoutData.email}
+                onChange={(e) => updateCheckoutData('email', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter email address"
+              />
+            </div>
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                value={checkoutData.phone}
+                onChange={(e) => updateCheckoutData('phone', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter phone number"
+              />
+            </div>
+          </div>
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Billing Address</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Address Line 1 *
+                </label>
+                <input
+                  type="text"
+                  value={checkoutData.billingAddress}
+                  onChange={(e) => updateCheckoutData('billingAddress', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter street address"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  City *
+                </label>
+                <input
+                  type="text"
+                  value={checkoutData.city}
+                  onChange={(e) => updateCheckoutData('city', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter city"
+                />
+              </div>
+            </div>
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  State/Province
+                </label>
+                <input
+                  type="text"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter state"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ZIP/Postal Code *
+                </label>
+                <input
+                  type="text"
+                  value={checkoutData.zip}
+                  onChange={(e) => updateCheckoutData('zip', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter ZIP code"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Country *
+                </label>
+                <select
+                  value={checkoutData.country}
+                  onChange={(e) => updateCheckoutData('country', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option>United States</option>
+                  <option>Canada</option>
+                  <option>United Kingdom</option>
+                  <option>Australia</option>
+                  <option>Germany</option>
+                  <option>France</option>
+                  <option>Japan</option>
+                  <option>India</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-between pt-6">
+            <button onClick={() => setCheckoutStep(0)} className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+              Back to Cart
+            </button>
+            <button onClick={() => setCheckoutStep(2)} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+              Continue to Payment
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const CheckoutPayment = () => (
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <button onClick={() => setCheckoutStep(1)} className="mb-4 flex items-center text-blue-600 hover:text-blue-800">
+            <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
+            Back to details
+          </button>
+          <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
+          <p className="text-gray-600 mt-2">Enter your payment information to complete your purchase</p>
+        </div>
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Payment Method</h2>
+            <div className="space-y-4">
+              <div className="flex items-center">
+                <input type="radio" name="paymentMethod" id="creditCard" className="mr-2" defaultChecked />
+                <label htmlFor="creditCard" className="text-gray-900">Credit/Debit Card</label>
+              </div>
+              <div className="flex items-center">
+                <input type="radio" name="paymentMethod" id="paypal" className="mr-2" />
+                <label htmlFor="paypal" className="text-gray-900">PayPal</label>
+              </div>
+              <div className="flex items-center">
+                <input type="radio" name="paymentMethod" id="applePay" className="mr-2" />
+                <label htmlFor="applePay" className="text-gray-900">Apple Pay</label>
+              </div>
+            </div>
+          </div>
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Card Details</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Card Number *
+                </label>
+                <input
+                  type="text"
+                  value={checkoutData.cardNumber}
+                  onChange={(e) => updateCheckoutData('cardNumber', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="1234 5678 9012 3456"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Expiry Date *
+                </label>
+                <input
+                  type="text"
+                  value={checkoutData.expiry}
+                  onChange={(e) => updateCheckoutData('expiry', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="MM/YY"
+                />
+              </div>
+            </div>
+            <div className="mt-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                CVV *
+              </label>
+              <input
+                type="text"
+                value={checkoutData.cvv}
+                onChange={(e) => updateCheckoutData('cvv', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="123"
+              />
+            </div>
+          </div>
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Billing Address</h2>
+            <div className="text-sm text-gray-600">
+              <p>Billing address will be used for verification purposes.</p>
+              <p className="mt-1">Current billing address: {checkoutData.billingAddress}, {checkoutData.city}, {checkoutData.zip}, {checkoutData.country}</p>
+            </div>
+          </div>
+          <div className="flex justify-between pt-6">
+            <button onClick={() => setCheckoutStep(1)} className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
+              Back to Details
+            </button>
+            <button onClick={processCheckout} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+              Place Order
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const CheckoutConfirmation = () => (
+    <div className="bg-gray-50 min-h-screen">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+            <CheckCircle className="h-8 w-8 text-green-600" />
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Thank You for Your Order!</h1>
+          <p className="text-gray-600">Your order has been successfully processed.</p>
+        </div>
+        <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Subtotal</span>
+                <span className="font-medium">${getSubtotal(cart).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Service Fee (5%)</span>
+                <span className="font-medium">${(getSubtotal(cart) * 0.05).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Processing Fee</span>
+                <span className="font-medium">$2.50</span>
+              </div>
+              <div className="flex justify-between pt-3 border-t border-gray-200">
+                <span className="font-bold text-gray-900">Total</span>
+                <span className="font-bold text-lg text-blue-600">
+                  ${getTotal(cart).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Order Details</h2>
+            <div className="space-y-4">
+              {cart.map(item => (
+                <div key={item.id} className="flex items-center">
+                  <img src={item.image} alt={item.title} className="w-12 h-12 rounded-lg object-cover" />
+                  <div className="ml-4 flex-1">
+                    <h3 className="font-medium text-gray-900">{item.title}</h3>
+                    <div className="text-sm text-gray-600">
+                      {item.tickets} × ${item.price} = ${(item.price * item.tickets).toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Contact Information</h2>
+            <div className="text-sm text-gray-600">
+              <p>Name: {checkoutData.firstName} {checkoutData.lastName}</p>
+              <p>Email: {checkoutData.email}</p>
+              <p>Phone: {checkoutData.phone}</p>
+            </div>
+          </div>
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Billing Address</h2>
+            <div className="text-sm text-gray-600">
+              <p>{checkoutData.billingAddress}</p>
+              <p>{checkoutData.city}, {checkoutData.zip}, {checkoutData.country}</p>
+            </div>
+          </div>
+          <div className="flex justify-center pt-6">
+            <button onClick={() => { setCheckoutStep(0); setCart([]); }} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
+              Continue Shopping
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const Footer = () => (
+    <footer className="bg-gray-900 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          <div className="lg:col-span-2">
+            <div className="flex items-center">
+              <Calendar className="h-8 w-8 text-blue-400" />
+              <span className="ml-2 text-xl font-bold">EventPro</span>
+            </div>
+            <p className="mt-4 text-gray-400 max-w-md">
+              The premier platform for discovering, organizing, and attending events worldwide. 
+              Connecting people through shared experiences since 2020.
+            </p>
+            <div className="mt-6 flex space-x-4">
+              <a href="#" className="text-gray-400 hover:text-white">
+                <Facebook className="h-6 w-6" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white">
+                <Twitter className="h-6 w-6" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white">
+                <Instagram className="h-6 w-6" />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-white">
+                <Linkedin className="h-6 w-6" />
+              </a>
+            </div>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold">Company</h3>
+            <ul className="mt-4 space-y-2">
+              <li>
+                <button onClick={() => scrollToSection(aboutRef)} className="text-gray-400 hover:text-white text-left w-full text-start">
+                  About Us
+                </button>
+              </li>
+              <li><a href="#" className="text-gray-400 hover:text-white">Careers</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white">Press</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white">Blog</a></li>
+              <li>
+                <button onClick={() => scrollToSection(contactRef)} className="text-gray-400 hover:text-white text-left w-full text-start">
+                  Contact
+                </button>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold">Resources</h3>
+            <ul className="mt-4 space-y-2">
+              <li><a href="#" className="text-gray-400 hover:text-white">Help Center</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white">Event Guidelines</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white">Safety Center</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white">Community</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white">Partners</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-semibold">Legal</h3>
+            <ul className="mt-4 space-y-2">
+              <li><a href="#" className="text-gray-400 hover:text-white">Privacy Policy</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white">Terms of Service</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white">Cookie Policy</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white">Accessibility</a></li>
+              <li><a href="#" className="text-gray-400 hover:text-white">GDPR</a></li>
+            </ul>
+          </div>
+        </div>
+        <div className="mt-12 pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center">
+          <p className="text-gray-400 text-sm">
+            © 2025 EventPro. All rights reserved.
+          </p>
+          <div className="mt-4 md:mt-0 flex space-x-6">
+            <a href="#" className="text-gray-400 hover:text-white text-sm">Security</a>
+            <a href="#" className="text-gray-400 hover:text-white text-sm">Status</a>
+            <a href="#" className="text-gray-400 hover:text-white text-sm">Site Map</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <Navigation
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+        selectedEvent={selectedEvent}
+        setSelectedEvent={setSelectedEvent}
+        setCheckoutStep={setCheckoutStep}
+        notifications={notifications}
+        setNotificationOpen={setNotificationOpen}
+        notificationOpen={notificationOpen}
+        favorites={favorites}
+        setFavorites={setFavorites} 
+        setFavoritesOpen={setFavoritesOpen}
+        favoritesOpen={favoritesOpen}
+        cart={cart}
+        setCart={setCart}   
+        setCartOpen={setCartOpen}
+        cartOpen={cartOpen}
+        user={user}
+        aboutRef={aboutRef}
+        contactRef={contactRef}
+        isMenuOpen={isMenuOpen}
+        setIsMenuOpen={setIsMenuOpen}
+        addNotification={addNotification}
+      />
+    <main className="flex-grow">
+      {currentView === "home" && !selectedEvent && checkoutStep === 0 && (
+        <HomePage
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedCategory={selectedCategory}
+          setSelectedCategory={setSelectedCategory}
+          priceFilter={priceFilter}
+          setPriceFilter={setPriceFilter}
+          categories={categories}
+          priceFilters={priceFilters}
+          filteredEvents={filteredEvents}
+          events={events}
+          favorites={favorites}
+          setFavorites={setFavorites}
+          addNotification={addNotification}
+          handleRegister={handleRegister}
+          handleAddToCart={handleAddToCart}
+          setSelectedEvent={setSelectedEvent}
+          registrationSuccess={registrationSuccess}
+          setRegistrationSuccess={setRegistrationSuccess}
+          aboutRef={aboutRef}
+          contactRef={contactRef}
+          searchInputRef={searchInputRef}
+          setCurrentView={setCurrentView}
+        />
+      )}
+
+      {currentView === "cart" && checkoutStep === 0 && <CartPage />}
+      
+      {currentView === "cart" && cart.length === 0 && (
+        <div className="max-w-4xl mx-auto px-4 py-12 text-center">
+          <ShoppingCartIcon className="mx-auto h-16 w-16 text-gray-400" />
+          <h2 className="mt-4 text-2xl font-bold text-gray-900">Your cart is empty</h2>
+          <p className="mt-2 text-gray-600">Add events to your cart to see them here.</p>
+          <button
+            onClick={() => setCurrentView("home")}
+            className="mt-6 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium"
+          >
+            Browse Events
+          </button>
+        </div>
+      )}
+
+      {selectedEvent && checkoutStep === 0 && <EventDetailPage />}
+      {currentView === "dashboard" && checkoutStep === 0 && (
+        <DashboardPage 
+          drafts={drafts} 
+          setDrafts={setDrafts} 
+          addNotification={addNotification}
+          setCurrentView={setCurrentView}
+        />
+      )}
+      {currentView === "organize" && checkoutStep === 0 && (
+        <OrganizeEventPage 
+          user={user}
+          addNotification={addNotification}
+          setDrafts={setDrafts}
+          drafts={drafts}
+          setEvents={setEvents}
+          setCurrentView={setCurrentView}
+          draftToEdit={draftToEdit}
+          setDraftToEdit={setDraftToEdit} 
+        />
+      )}
+      {checkoutStep === 1 && <CheckoutDetails />}
+      {checkoutStep === 2 && <CheckoutPayment />}
+      {checkoutStep === 3 && <CheckoutConfirmation />}
+    </main>
+      <Footer />
+    </div>
+  );
+};
+
+export default App;
