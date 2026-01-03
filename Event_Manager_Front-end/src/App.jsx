@@ -160,16 +160,17 @@ const categories = ["All", "Technology", "Business", "Entertainment", "Healthcar
 const priceFilters = ["All", "Free", "Paid"];
 
 // 🔹 Event Card Component
-const EventCard = ({ 
-  event, 
-  onRegister, 
-  onAddToCart, 
-  isFavorited, 
+// 🔹 Event Card Component (with enhanced hover animation)
+const EventCard = ({
+  event,
+  onRegister,
+  onAddToCart,
+  isFavorited,
   onToggleFavorite,
-  onViewDetails 
+  onViewDetails,
 }) => (
-  <div 
-    className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+  <div
+    className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer hover:scale-[1.02] hover:-translate-y-1"
     onClick={onViewDetails}
   >
     <div className="relative">
@@ -179,32 +180,28 @@ const EventCard = ({
           Featured
         </div>
       )}
-      <button 
+      <button
         onClick={(e) => {
           e.stopPropagation();
           onToggleFavorite(event.id);
-        }} 
+        }}
         className="absolute top-4 left-4 bg-white bg-opacity-90 p-2 rounded-full hover:bg-opacity-100 transition-all"
       >
         <Heart className={`h-5 w-5 ${isFavorited ? 'text-red-500 fill-current' : 'text-gray-600'}`} />
       </button>
-      
       <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 px-3 py-1 rounded-full text-sm font-medium text-blue-600">
         {event.category}
       </div>
-      
       {event.price === 0 && (
         <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
           Free
         </div>
       )}
-
       {event.price > 0 && (
         <div className="absolute top-4 right-4 bg-amber-400 text-white px-3 py-1 rounded-full text-sm font-medium">
           Paid
         </div>
       )}
-
     </div>
     <div className="p-6">
       <div className="flex justify-between items-start">
@@ -267,52 +264,47 @@ const EventCard = ({
   </div>
 );
 
-// 🔹 Featured Event Card
-const FeaturedEventCard = ({ 
-  event, 
-  onRegister, 
-  onAddToCart, 
-  isFavorited, 
+// 🔹 Featured Event Card (with enhanced hover animation)
+const FeaturedEventCard = ({
+  event,
+  onRegister,
+  onAddToCart,
+  isFavorited,
   onToggleFavorite,
-  onViewDetails 
+  onViewDetails,
 }) => (
-  <div 
-    className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-1 shadow-lg cursor-pointer"
+  <div
+    className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-1 shadow-lg cursor-pointer hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:-translate-y-1"
     onClick={onViewDetails}
   >
     <div className="bg-white rounded-xl overflow-hidden">
       <div className="relative">
         <img src={event.image} alt={event.title} className="w-full h-48 object-cover" />
-        <button 
+        <button
           onClick={(e) => {
             e.stopPropagation();
             onToggleFavorite(event.id);
-          }} 
+          }}
           className="absolute top-4 left-4 bg-white bg-opacity-90 p-2 rounded-full hover:bg-opacity-100 transition-all z-10"
         >
           <Heart className={`h-5 w-5 ${isFavorited ? 'text-red-500 fill-current' : 'text-gray-600'}`} />
         </button>
-
         <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 px-3 py-1 rounded-full text-sm font-medium text-blue-600">
           {event.category}
         </div>
-
         <div className="absolute bottom-4 right-2 bg-gradient-to-r from-purple-700 to-fuchsia-700 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
           FEATURED
         </div>
-
         {event.price === 0 && (
           <div className="absolute top-2 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
             FREE
           </div>
         )}
-
         {event.price > 0 && (
           <div className="absolute top-4 right-4 bg-amber-400 text-white px-3 py-1 rounded-full text-sm font-medium">
             Paid
           </div>
         )}
-
       </div>
       <div className="p-6">
         <div className="flex justify-between items-start mb-2">
@@ -371,6 +363,7 @@ const FeaturedEventCard = ({
     </div>
   </div>
 );
+
 
 // 🔹 HomePage Component (now stable — defined outside App)
 const HomePage = ({
@@ -601,22 +594,22 @@ const HomePage = ({
         </div>
       </div>
     </div>
-    <div ref={contactRef} className="bg-gradient-to-r  from-purple-600 via-fuchsia-600 to-purple-700 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 mb-4">
+    <div ref={contactRef} className="bg-gradient-to-r from-purple-800 via-fuchsia-800 to-purple-900 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 mb-4">
       <div className="text-center mb-16">
-        <h2 className="text-3xl font-bold text-gray-900">Contact Us</h2>
-        <p className="mt-4 text-xl text-white max-w-3xl mx-auto">
+        <h2 className="text-3xl font-bold text-white">Contact Us</h2>
+        <p className="mt-4 text-xl text-slate-300 max-w-3xl mx-auto">
           Have questions or need assistance? Our team is here to help.
         </p>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div>
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Get in Touch</h3>
+          <h3 className="text-2xl font-bold text-white mb-6">Get in Touch</h3>
           <div className="space-y-6">
             <div className="flex items-start">
-              <Map className="h-6 w-6 text-green-500 mt-1" />
+              <Map className="h-6 w-6 text-green-400 mt-1 flex-shrink-0" />
               <div className="ml-4">
-                <h4 className="text-lg font-medium text-gray-900">Address</h4>
-                <p className="mt-1 text-gray-200">
+                <h4 className="text-lg font-medium text-white">Address</h4>
+                <p className="mt-1 text-slate-300">
                   123 Event Street<br />
                   San Francisco, CA 94103<br />
                   United States
@@ -624,20 +617,20 @@ const HomePage = ({
               </div>
             </div>
             <div className="flex items-start">
-              <Phone className="h-6 w-6 text-green-500 mt-1" />
+              <Phone className="h-6 w-6 text-green-400 mt-1 flex-shrink-0" />
               <div className="ml-4">
-                <h4 className="text-lg font-medium text-gray-900">Phone</h4>
-                <p className="mt-1 text-gray-200">
+                <h4 className="text-lg font-medium text-white">Phone</h4>
+                <p className="mt-1 text-slate-300">
                   +1 (800) 123-4567<br />
                   Mon-Fri, 9am-6pm PST
                 </p>
               </div>
             </div>
             <div className="flex items-start">
-              <Mail className="h-6 w-6 text-green-500 mt-1" />
+              <Mail className="h-6 w-6 text-green-400 mt-1 flex-shrink-0" />
               <div className="ml-4">
-                <h4 className="text-lg font-medium text-gray-900">Email</h4>
-                <p className="mt-1 text-gray-200">
+                <h4 className="text-lg font-medium text-white">Email</h4>
+                <p className="mt-1 text-slate-300">
                   support@eventpro.com<br />
                   info@eventpro.com
                 </p>
@@ -645,48 +638,48 @@ const HomePage = ({
             </div>
           </div>
         </div>
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h3>
+        <div className="bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-700">
+          <h3 className="text-2xl font-bold text-white mb-6">Send us a Message</h3>
           <form className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+              <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-1">Name</label>
               <input
                 type="text"
                 id="name"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
                 placeholder="Your name"
               />
             </div>
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1">Email</label>
               <input
                 type="email"
                 id="email"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
                 placeholder="your@email.com"
               />
             </div>
             <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+              <label htmlFor="subject" className="block text-sm font-medium text-slate-300 mb-1">Subject</label>
               <input
                 type="text"
                 id="subject"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
                 placeholder="What is this regarding?"
               />
             </div>
             <div>
-              <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+              <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-1">Message</label>
               <textarea
                 id="message"
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
                 placeholder="Your message..."
               ></textarea>
             </div>
             <button
               type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium transition-colors duration-300"
+              className="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 shadow-lg"
             >
               Send Message
             </button>
@@ -1129,6 +1122,422 @@ const scrollToSection = (ref) => {
   }
 };
 
+
+// 🔹 Checkout Details (Step 1) — Dark Theme
+const CheckoutDetails = ({
+  checkoutData,
+  updateCheckoutData,
+  setCheckoutStep
+}) => (
+  <div className="bg-gradient-to-r from-purple-800 via-fuchsia-800 to-purple-900 min-h-screen text-white">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-8">
+        <button
+          onClick={() => setCheckoutStep(0)}
+          className="mb-4 flex items-center text-purple-200 hover:text-white"
+        >
+          <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
+          Back to cart
+        </button>
+        <h1 className="text-3xl font-bold">Checkout</h1>
+        <p className="text-slate-300 mt-2">Enter your details to complete your purchase</p>
+      </div>
+      <div className="bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-700">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold mb-4">Contact Information</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                First Name *
+              </label>
+              <input
+                type="text"
+                value={checkoutData.firstName}
+                onChange={(e) => updateCheckoutData('firstName', e.target.value)}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                placeholder="Enter first name"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Last Name *
+              </label>
+              <input
+                type="text"
+                value={checkoutData.lastName}
+                onChange={(e) => updateCheckoutData('lastName', e.target.value)}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                placeholder="Enter last name"
+              />
+            </div>
+          </div>
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Email Address *
+            </label>
+            <input
+              type="email"
+              value={checkoutData.email}
+              onChange={(e) => updateCheckoutData('email', e.target.value)}
+              className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+              placeholder="Enter email address"
+            />
+          </div>
+          <div className="mt-6">
+            <label className="block text-sm font-medium text-slate-300 mb-2">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              value={checkoutData.phone}
+              onChange={(e) => updateCheckoutData('phone', e.target.value)}
+              className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+              placeholder="Enter phone number"
+            />
+          </div>
+        </div>
+        <div className="mb-6">
+          <h2 className="text-xl font-bold mb-4">Billing Address</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Address Line 1 *
+              </label>
+              <input
+                type="text"
+                value={checkoutData.billingAddress}
+                onChange={(e) => updateCheckoutData('billingAddress', e.target.value)}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                placeholder="Enter street address"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                City *
+              </label>
+              <input
+                type="text"
+                value={checkoutData.city}
+                onChange={(e) => updateCheckoutData('city', e.target.value)}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                placeholder="Enter city"
+              />
+            </div>
+          </div>
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                State/Province
+              </label>
+              <input
+                type="text"
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                placeholder="Enter state"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                ZIP/Postal Code *
+              </label>
+              <input
+                type="text"
+                value={checkoutData.zip}
+                onChange={(e) => updateCheckoutData('zip', e.target.value)}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                placeholder="Enter ZIP code"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Country *
+              </label>
+              <select
+                value={checkoutData.country}
+                onChange={(e) => updateCheckoutData('country', e.target.value)}
+                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+              >
+                <option className="bg-slate-800">United States</option>
+                <option className="bg-slate-800">Canada</option>
+                <option className="bg-slate-800">United Kingdom</option>
+                <option className="bg-slate-800">Australia</option>
+                <option className="bg-slate-800">Germany</option>
+                <option className="bg-slate-800">France</option>
+                <option className="bg-slate-800">Japan</option>
+                <option className="bg-slate-800">India</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col sm:flex-row justify-between pt-6 gap-4">
+          <button
+            onClick={() => setCheckoutStep(0)}
+            className="px-6 py-3 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 font-medium"
+          >
+            Back to Cart
+          </button>
+          <button
+            onClick={() => setCheckoutStep(2)}
+            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-lg font-medium shadow-md"
+          >
+            Continue to Payment
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const CheckoutPayment = ({
+  checkoutData,
+  updateCheckoutData,
+  setCheckoutStep,
+  processCheckout
+}) => (
+  <div className="bg-gradient-to-r from-purple-800 via-fuchsia-800 to-purple-900 min-h-screen text-white">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mb-8">
+        <button
+          onClick={() => setCheckoutStep(1)}
+          className="mb-4 flex items-center text-purple-200 hover:text-white"
+        >
+          <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
+          Back to details
+        </button>
+        <h1 className="text-3xl font-bold">Checkout</h1>
+        <p className="text-slate-300 mt-2">Enter your payment information to complete your purchase</p>
+      </div>
+      <div className="bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-700">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold mb-4">Payment Method</h2>
+          <div className="space-y-3">
+            {[
+              { id: 'creditCard', label: 'Credit/Debit Card', icon: CreditCard },
+              { id: 'paypal', label: 'PayPal', icon: LucideInfo },
+              { id: 'applePay', label: 'Apple Pay', icon: LucideInfo },
+            ].map(({ id, label, icon: Icon }) => (
+              <label key={id} className="flex items-center p-4 bg-slate-700/50 rounded-lg border border-slate-600 hover:bg-slate-700 cursor-pointer">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value={id}
+                  defaultChecked={id === 'creditCard'}
+                  className="mr-3 h-5 w-5 text-purple-500 focus:ring-purple-500"
+                />
+                <Icon className="h-5 w-5 text-slate-400 mr-3" />
+                <span className="text-slate-200">{label}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+        <div className="mb-6">
+          <h2 className="text-xl font-bold mb-4">Card Details</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Card Number *
+              </label>
+              <div className="relative">
+                <CreditCard className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
+                <input
+                  type="text"
+                  value={checkoutData.cardNumber}
+                  onChange={(e) => updateCheckoutData('cardNumber', e.target.value)}
+                  className="w-full pl-10 px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                  placeholder="1234 5678 9012 3456"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Expiry *
+                </label>
+                <input
+                  type="text"
+                  value={checkoutData.expiry}
+                  onChange={(e) => updateCheckoutData('expiry', e.target.value)}
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                  placeholder="MM/YY"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  CVV *
+                </label>
+                <div className="relative">
+                  <Shield className="absolute left-3 top-3.5 h-4 w-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={checkoutData.cvv}
+                    onChange={(e) => updateCheckoutData('cvv', e.target.value)}
+                    className="w-full pl-8 px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                    placeholder="123"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="mb-6">
+          <h2 className="text-xl font-bold mb-4">Billing Address</h2>
+          <p className="text-slate-400 text-sm">
+            Same as contact info: {checkoutData.billingAddress}, {checkoutData.city}, {checkoutData.zip}, {checkoutData.country}
+          </p>
+          <button className="mt-2 text-sm text-purple-400 hover:text-purple-300 font-medium">
+            Edit billing address
+          </button>
+        </div>
+        <div className="flex flex-col sm:flex-row justify-between pt-6 gap-4">
+          <button
+            onClick={() => setCheckoutStep(1)}
+            className="px-6 py-3 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 font-medium"
+          >
+            Back to Details
+          </button>
+          <button
+            onClick={processCheckout}
+            className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium shadow-md flex items-center"
+          >
+            <Lock className="h-4 w-4 mr-2" />
+            Secure Checkout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const CheckoutConfirmation = ({
+  cart,
+  checkoutData,
+  setCheckoutStep,
+  setCart,
+  setCurrentView
+}) => {
+  const getTotal = (cart) => {
+    const subtotal = cart.reduce((total, item) => total + (item.price * item.tickets), 0);
+    return subtotal + subtotal * 0.05 + 2.5;
+  };
+  const getSubtotal = (cart) => cart.reduce((total, item) => total + (item.price * item.tickets), 0);
+
+  return (
+    <div className="bg-gradient-to-r from-purple-800 via-fuchsia-800 to-purple-900 min-h-screen text-white">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center mb-10">
+          <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-green-900/30 border border-green-700 mb-4">
+            <CheckCircle className="h-8 w-8 text-green-400" />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Thank You for Your Order!</h1>
+          <p className="text-slate-300 max-w-2xl mx-auto">
+            Your order has been successfully processed. A confirmation email has been sent to{' '}
+            <span className="font-medium text-slate-200">{checkoutData.email}</span>.
+          </p>
+        </div>
+        <div className="bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-700">
+          <div className="mb-6">
+            <h2 className="text-xl font-bold mb-4">Order Summary</h2>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-slate-300">Subtotal</span>
+                <span className="font-medium">${getSubtotal(cart).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-300">Service Fee (5%)</span>
+                <span className="font-medium">${(getSubtotal(cart) * 0.05).toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-300">Processing Fee</span>
+                <span className="font-medium">$2.50</span>
+              </div>
+              <div className="flex justify-between pt-3 border-t border-slate-700">
+                <span className="font-bold">Total</span>
+                <span className="font-bold text-xl text-purple-300">
+                  ${getTotal(cart).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="mb-6">
+            <h2 className="text-xl font-bold mb-4">Your Tickets</h2>
+            <div className="space-y-4">
+              {cart.map((item) => (
+                <div key={item.id} className="flex items-start bg-slate-700/50 rounded-lg p-4">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                  />
+                  <div className="ml-4">
+                    <h3 className="font-semibold">{item.title}</h3>
+                    <p className="text-sm text-slate-400 mt-1">
+                      {item.tickets} ticket{item.tickets > 1 ? 's' : ''} •{' '}
+                      {new Date(item.date).toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric',
+                      })}
+                    </p>
+                    <p className="text-sm font-medium text-slate-200 mt-1">
+                      ${item.price} × {item.tickets} = ${(item.price * item.tickets).toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <h3 className="font-semibold text-slate-200 mb-2">Contact Info</h3>
+              <p className="text-slate-400 text-sm">
+                {checkoutData.firstName} {checkoutData.lastName}
+                <br />
+                {checkoutData.email}
+                <br />
+                {checkoutData.phone}
+              </p>
+            </div>
+            <div>
+              <h3 className="font-semibold text-slate-200 mb-2">Billing Address</h3>
+              <p className="text-slate-400 text-sm">
+                {checkoutData.billingAddress}
+                <br />
+                {checkoutData.city}, {checkoutData.zip}
+                <br />
+                {checkoutData.country}
+              </p>
+            </div>
+          </div>
+          <div className="pt-6 border-t border-slate-700 flex flex-col sm:flex-row justify-center gap-4">
+            <button
+              onClick={() => {
+                setCheckoutStep(0);
+                setCart([]);
+                setCurrentView('home');
+              }}
+              className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium"
+            >
+              Browse More Events
+            </button>
+            <button
+              onClick={() => {
+                setCheckoutStep(0);
+                setCart([]);
+                setCurrentView('dashboard');
+              }}
+              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-lg font-medium shadow-md"
+            >
+              View Dashboard
+            </button>
+          </div>
+        </div>
+        <div className="mt-8 text-center text-slate-500 text-sm">
+          <p>Need help? Contact us at <span className="text-purple-300">support@eventpro.com</span></p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // 🔹 Main App
 const App = () => {
   const [events, setEvents] = useState(mockEvents);
@@ -1278,105 +1687,126 @@ const App = () => {
   const EventDetailPage = () => {
     if (!selectedEvent) return null;
     return (
-      <div className="bg-gray-50 min-h-screen">
+      <div className="bg-gradient-to-r from-purple-800 via-fuchsia-800 to-purple-900 min-h-screen text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <button onClick={() => setSelectedEvent(null)} className="mb-6 flex items-center text-blue-600 hover:text-blue-800">
+          <button
+            onClick={() => setSelectedEvent(null)}
+            className="mb-6 flex items-center text-purple-200 hover:text-white"
+          >
             <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
             Back to events
           </button>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <img src={selectedEvent.image} alt={selectedEvent.title} className="w-full h-64 md:h-80 object-cover" />
+              <div className="bg-slate-800 rounded-2xl shadow-lg overflow-hidden border border-slate-700">
+                <img
+                  src={selectedEvent.image}
+                  alt={selectedEvent.title}
+                  className="w-full h-64 md:h-80 object-cover"
+                />
                 <div className="p-8">
                   <div className="flex justify-between items-start mb-6">
                     <div>
-                      <span className="inline-block bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full mb-4">
+                      <span className="inline-block bg-purple-900/50 text-purple-300 text-sm px-3 py-1 rounded-full mb-4">
                         {selectedEvent.category}
                       </span>
-                      <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{selectedEvent.title}</h1>
+                      <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                        {selectedEvent.title}
+                      </h1>
                     </div>
                     <div className="flex items-center">
                       <Star className="h-6 w-6 text-yellow-400 fill-current mr-2" />
-                      <span className="text-xl font-bold text-gray-900">{selectedEvent.rating}</span>
-                      <span className="ml-2 text-gray-600">({selectedEvent.reviews} reviews)</span>
+                      <span className="text-xl font-bold text-white">{selectedEvent.rating}</span>
+                      <span className="ml-2 text-slate-400">({selectedEvent.reviews} reviews)</span>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div className="flex items-center">
-                      <Calendar className="h-5 w-5 text-blue-600 mr-3" />
+                      <Calendar className="h-5 w-5 text-purple-400 mr-3" />
                       <div>
-                        <div className="text-sm text-gray-500">Date</div>
-                        <div className="font-medium">{new Date(selectedEvent.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</div>
+                        <div className="text-sm text-slate-400">Date</div>
+                        <div className="font-medium text-white">
+                          {new Date(selectedEvent.date).toLocaleDateString('en-US', {
+                            weekday: 'long',
+                            month: 'long',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                        </div>
                       </div>
                     </div>
                     <div className="flex items-center">
-                      <Clock className="h-5 w-5 text-blue-600 mr-3" />
+                      <Clock className="h-5 w-5 text-purple-400 mr-3" />
                       <div>
-                        <div className="text-sm text-gray-500">Time</div>
-                        <div className="font-medium">{selectedEvent.time}</div>
+                        <div className="text-sm text-slate-400">Time</div>
+                        <div className="font-medium text-white">{selectedEvent.time}</div>
                       </div>
                     </div>
                     <div className="flex items-center">
-                      <MapPin className="h-5 w-5 text-blue-600 mr-3" />
+                      <MapPin className="h-5 w-5 text-purple-400 mr-3" />
                       <div>
-                        <div className="text-sm text-gray-500">Location</div>
-                        <div className="font-medium">{selectedEvent.location}</div>
+                        <div className="text-sm text-slate-400">Location</div>
+                        <div className="font-medium text-white">{selectedEvent.location}</div>
                       </div>
                     </div>
                   </div>
                   <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">About This Event</h2>
-                    <p className="text-gray-600 leading-relaxed">{selectedEvent.description}</p>
+                    <h2 className="text-2xl font-bold text-white mb-4">About This Event</h2>
+                    <p className="text-slate-300 leading-relaxed">{selectedEvent.description}</p>
                     <div className="mt-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">What to Expect</h3>
-                      <ul className="space-y-2 text-gray-600">
+                      <h3 className="text-lg font-semibold text-white mb-3">What to Expect</h3>
+                      <ul className="space-y-2 text-slate-300">
                         <li className="flex items-start">
-                          <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <Check className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
                           <span>Keynote presentations from industry leaders</span>
                         </li>
                         <li className="flex items-start">
-                          <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <Check className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
                           <span>Interactive workshops and hands-on sessions</span>
                         </li>
                         <li className="flex items-start">
-                          <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <Check className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
                           <span>Networking opportunities with professionals</span>
                         </li>
                         <li className="flex items-start">
-                          <Check className="h-5 w-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                          <Check className="h-5 w-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
                           <span>Access to exclusive resources and materials</span>
                         </li>
                       </ul>
                     </div>
                   </div>
                   <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Organizer</h2>
+                    <h2 className="text-2xl font-bold text-white mb-4">Organizer</h2>
                     <div className="flex items-center">
-                      <div className="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16" />
+                      <div className="bg-slate-700 border-2 border-dashed rounded-xl w-16 h-16" />
                       <div className="ml-4">
-                        <h3 className="text-lg font-semibold text-gray-900">{selectedEvent.organizer}</h3>
-                        <p className="text-gray-600">Verified Organizer • 15 events hosted</p>
+                        <h3 className="text-lg font-semibold text-white">{selectedEvent.organizer}</h3>
+                        <p className="text-slate-400">Verified Organizer • 15 events hosted</p>
                       </div>
                     </div>
                   </div>
                   <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Venue</h2>
-                    <div className="bg-gray-100 rounded-lg p-4">
+                    <h2 className="text-2xl font-bold text-white mb-4">Venue</h2>
+                    <div className="bg-slate-700/50 rounded-lg p-4 border border-slate-600">
                       <div className="flex items-start">
-                        <MapPin className="h-5 w-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+                        <MapPin className="h-5 w-5 text-purple-400 mt-0.5 mr-3 flex-shrink-0" />
                         <div>
-                          <p className="font-medium text-gray-900">{selectedEvent.location}</p>
-                          <p className="text-gray-600 mt-1">Full address will be provided upon registration</p>
+                          <p className="font-medium text-white">{selectedEvent.location}</p>
+                          <p className="text-slate-400 mt-1">
+                            Full address will be provided upon registration
+                          </p>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Event Tags</h2>
+                    <h2 className="text-2xl font-bold text-white mb-4">Event Tags</h2>
                     <div className="flex flex-wrap gap-2">
-                      {selectedEvent.tags.map(tag => (
-                        <span key={tag} className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
+                      {selectedEvent.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="bg-purple-900/40 text-purple-300 text-xs px-3 py-1 rounded-full"
+                        >
                           {tag}
                         </span>
                       ))}
@@ -1386,20 +1816,27 @@ const App = () => {
               </div>
             </div>
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
+              <div className="bg-slate-800 rounded-2xl shadow-lg p-6 sticky top-8 border border-slate-700">
                 <div className="text-center mb-6">
-                  <div className={`text-3xl font-bold ${selectedEvent.price === 0 ? 'text-green-600' : 'text-blue-600'} mb-2`}>
-                    {selectedEvent.price === 0 ? "Free" : `$${selectedEvent.price}`}
+                  <div
+                    className={`text-3xl font-bold ${
+                      selectedEvent.price === 0 ? 'text-green-400' : 'text-blue-400'
+                    } mb-2`}
+                  >
+                    {selectedEvent.price === 0 ? 'Free' : `$${selectedEvent.price}`}
                   </div>
-                  <div className="text-gray-600">
+                  <div className="text-slate-400">
                     {selectedEvent.capacity - selectedEvent.attendees} spots left
                   </div>
                 </div>
                 <div className="mb-6">
-                  <div className="w-full bg-gray-200 rounded-full h-2.5">
-                    <div className="bg-blue-600 h-2.5 rounded-full" style={{ width: `${(selectedEvent.attendees / selectedEvent.capacity) * 100}%` }}></div>
+                  <div className="w-full bg-slate-700 rounded-full h-2.5">
+                    <div
+                      className="bg-blue-500 h-2.5 rounded-full"
+                      style={{ width: `${((selectedEvent.attendees / selectedEvent.capacity) * 100).toFixed(1)}%` }}
+                    ></div>
                   </div>
-                  <div className="flex justify-between text-sm text-gray-600 mt-1">
+                  <div className="flex justify-between text-sm text-slate-500 mt-1">
                     <span>0</span>
                     <span>{selectedEvent.capacity}</span>
                   </div>
@@ -1413,17 +1850,17 @@ const App = () => {
                   </button>
                   <button
                     onClick={() => handleAddToCart(selectedEvent)}
-                    className="w-full bg-white hover:bg-gray-50 text-gray-700 py-3 px-4 border border-gray-300 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center"
+                    className="w-full bg-slate-700 hover:bg-slate-600 text-white py-3 px-4 border border-slate-600 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center"
                   >
                     <ShoppingCartIcon className="h-5 w-5 mr-2" />
                     Add to Cart
                   </button>
-                  <button 
+                  <button
                     onClick={() => {
-                      setFavorites(prev => {
+                      setFavorites((prev) => {
                         const isFav = prev.includes(selectedEvent.id);
                         return isFav
-                          ? prev.filter(id => id !== selectedEvent.id)
+                          ? prev.filter((id) => id !== selectedEvent.id)
                           : [...prev, selectedEvent.id];
                       });
                       const message = favorites.includes(selectedEvent.id)
@@ -1431,33 +1868,41 @@ const App = () => {
                         : `Added "${selectedEvent.title}" to favorites`;
                       addNotification(message, favorites.includes(selectedEvent.id) ? 'info' : 'success');
                     }}
-                    className={`w-full flex items-center justify-center py-3 px-4 rounded-lg transition-colors ${
-                      favorites.includes(selectedEvent.id) 
-                        ? 'bg-red-50 text-red-600 border border-red-200' 
-                        : 'border border-gray-300 hover:bg-gray-50'
+                    className={`w-full flex items-center justify-center py-3 px-4 rounded-lg transition-colors border ${
+                      favorites.includes(selectedEvent.id)
+                        ? 'bg-red-900/30 border-red-700 text-red-300'
+                        : 'border-slate-600 hover:bg-slate-700'
                     }`}
                   >
-                    <Heart className={`h-5 w-5 mr-2 ${favorites.includes(selectedEvent.id) ? 'fill-current text-red-500' : 'text-gray-500'}`} />
-                    {favorites.includes(selectedEvent.id) ? 'Added to Favorites' : 'Add to Favorites'}
+                    <Heart
+                      className={`h-5 w-5 mr-2 ${
+                        favorites.includes(selectedEvent.id)
+                          ? 'fill-current text-red-400'
+                          : 'text-slate-300'
+                      }`}
+                    />
+                    {favorites.includes(selectedEvent.id)
+                      ? 'Added to Favorites'
+                      : 'Add to Favorites'}
                   </button>
-                  <button className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                  <button className="w-full flex items-center justify-center py-3 px-4 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors text-slate-300">
                     <Share2 className="h-5 w-5 mr-2" />
                     Share Event
                   </button>
                 </div>
-                <div className="pt-6 border-t border-gray-200">
-                  <h3 className="font-semibold text-gray-900 mb-4">Event Policies</h3>
-                  <ul className="space-y-2 text-sm text-gray-600">
+                <div className="pt-6 border-t border-slate-700">
+                  <h3 className="font-semibold text-white mb-4">Event Policies</h3>
+                  <ul className="space-y-2 text-sm text-slate-300">
                     <li className="flex items-start">
-                      <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="h-4 w-4 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
                       <span>100% money-back guarantee if canceled 14 days before event</span>
                     </li>
                     <li className="flex items-start">
-                      <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="h-4 w-4 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
                       <span>Free transfers to another attendee</span>
                     </li>
                     <li className="flex items-start">
-                      <CheckCircle className="h-4 w-4 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
+                      <CheckCircle className="h-4 w-4 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
                       <span>Includes lunch and refreshments</span>
                     </li>
                   </ul>
@@ -1719,15 +2164,15 @@ const App = () => {
                 <h2 className="text-xl font-bold text-white">Quick Actions</h2>
               </div>
               <div className="text-white p-4 space-y-3">
-                <button onClick={() => setCurrentView("organize")} className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <button onClick={() => setCurrentView("organize")} className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-700 transition-colors">
                   <Plus className="h-5 w-5 mr-2" />
                   Create New Event
                 </button>
-                <button className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <button className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-700 transition-colors">
                   <Edit3 className="h-5 w-5 mr-2" />
                   Edit Profile
                 </button>
-                <button className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                <button className="w-full flex items-center justify-center py-3 px-4 border border-gray-300 rounded-lg hover:bg-gray-700 transition-colors">
                   <Settings className="h-5 w-5 mr-2" />
                   Account Settings
                 </button>
@@ -1740,17 +2185,19 @@ const App = () => {
   );
 
   // 🔹 OrganizeEventPage with Multi-step Form
+
   const OrganizeEventPage = ({
     user,
     addNotification,
     setDrafts,
     drafts,
     setEvents,
-    setCurrentView
+    setCurrentView,
+    draftToEdit,
+    setDraftToEdit
   }) => {
-    const [activeStep, setActiveStep] = useState(0); // 0: Event Details, 1: Schedule, 2: Venue, 3: Tickets, 4: Publish
+    const [activeStep, setActiveStep] = useState(0); // 0: Event Details, 1: Location, 2: Venue, 3: Tickets, 4: Publish
     const [eventForm, setEventForm] = useState(() => {
-      // Initialize from draft if provided
       if (draftToEdit) {
         return {
           title: draftToEdit.title || '',
@@ -1765,7 +2212,7 @@ const App = () => {
           venueCapacity: draftToEdit.venueCapacity || '',
           ticketPrice: draftToEdit.ticketPrice || 0,
           maxTickets: draftToEdit.maxTickets || 100,
-          imageFile: null, // Can't restore file blobs easily — leave null
+          imageFile: null,
           imagePreview: draftToEdit.imagePreview || draftToEdit.image || null,
         };
       }
@@ -1789,7 +2236,6 @@ const App = () => {
 
     useEffect(() => {
       return () => {
-        // Optional: clear draft-to-edit when unmounting (e.g., navigating away)
         if (setDraftToEdit) setDraftToEdit(null);
       };
     }, [setDraftToEdit]);
@@ -1813,30 +2259,25 @@ const App = () => {
     };
 
     const handleNextStep = () => {
-      if (activeStep < 4) {
-        setActiveStep(activeStep + 1);
-      }
+      if (activeStep < 4) setActiveStep(activeStep + 1);
     };
 
     const handlePreviousStep = () => {
-      if (activeStep > 0) {
-        setActiveStep(activeStep - 1);
-      }
+      if (activeStep > 0) setActiveStep(activeStep - 1);
     };
 
     const handleSaveDraft = () => {
       const now = new Date().toISOString();
-      
       if (draftToEdit) {
-        // Update existing draft
-        setDrafts(prev => prev.map(d => 
-          d.id === draftToEdit.id 
-            ? { ...d, ...eventForm, updatedAt: now } 
-            : d
-        ));
+        setDrafts(prev =>
+          prev.map(d =>
+            d.id === draftToEdit.id
+              ? { ...d, ...eventForm, updatedAt: now }
+              : d
+          )
+        );
         addNotification(`Draft "${eventForm.title || 'Untitled'}" updated!`, "success");
       } else {
-        // Create new draft
         const newDraft = {
           ...eventForm,
           id: Date.now(),
@@ -1847,14 +2288,9 @@ const App = () => {
         setDrafts(prev => [...prev, newDraft]);
         addNotification("Event draft saved successfully!", "success");
       }
-      
-      // Optional: clear draftToEdit and go to dashboard
-      // setDraftToEdit(null);
-      // setCurrentView("dashboard");
     };
 
     const handlePublish = () => {
-      // 🔹 Validation
       if (!eventForm.title.trim()) {
         addNotification("Event title is required", "error");
         return;
@@ -1876,7 +2312,6 @@ const App = () => {
         return;
       }
 
-      // Simulate publishing
       const newEvent = {
         id: Date.now(),
         title: eventForm.title,
@@ -1888,7 +2323,7 @@ const App = () => {
         capacity: parseInt(eventForm.venueCapacity) || 100,
         attendees: 0,
         description: eventForm.description || "No description provided.",
-        image: eventForm.imagePreview || `https://placehold.co/400x250/6366f1/white?text=${encodeURIComponent(eventForm.title)}`,
+        image: eventForm.imagePreview || `https://placehold.co/400x250/7e22ce/white?text=${encodeURIComponent(eventForm.title)}`,
         organizer: user.name,
         featured: false,
         rating: 0,
@@ -1897,17 +2332,15 @@ const App = () => {
         eventType: eventForm.eventType,
       };
 
-      // Add to events list
       setEvents(prev => [...prev, newEvent]);
 
-      // 🔹 If editing a draft, remove it after publishing
       if (draftToEdit) {
         setDrafts(prev => prev.filter(d => d.id !== draftToEdit.id));
         addNotification(`Draft published and removed. Event "${newEvent.title}" is live!`, "success");
       } else {
         addNotification(`Event "${newEvent.title}" published successfully!`, "success");
-      }      
-      // Reset form and navigate back
+      }
+
       setEventForm({
         title: '',
         category: 'Technology',
@@ -1925,7 +2358,7 @@ const App = () => {
         imagePreview: null,
       });
       setActiveStep(0);
-      setDraftToEdit(null); // clear after publish
+      setDraftToEdit(null);
       setCurrentView("dashboard");
     };
 
@@ -1933,71 +2366,68 @@ const App = () => {
       switch (activeStep) {
         case 0:
           return (
-            <>
-              <div className="space-y-6">
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Event Title *
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  value={eventForm.title}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Enter event title"
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Event Title *
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Category *
                   </label>
-                  <input
-                    type="text"
-                    name="title"
-                    value={eventForm.title}
+                  <select
+                    name="category"
+                    value={eventForm.category}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter event title"
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Category *
-                    </label>
-                    <select
-                      name="category"
-                      value={eventForm.category}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      {categories.filter(c => c !== "All").map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Event Type
-                    </label>
-                    <select
-                      name="eventType"
-                      value={eventForm.eventType}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option>Conference</option>
-                      <option>Workshop</option>
-                      <option>Seminar</option>
-                      <option>Webinar</option>
-                      <option>Networking</option>
-                      <option>Festival</option>
-                    </select>
-                  </div>
+                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  >
+                    {categories.filter(c => c !== "All").map(category => (
+                      <option key={category} value={category} className="bg-slate-800">{category}</option>
+                    ))}
+                  </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Event Description
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
+                    Event Type
                   </label>
-                  <textarea
-                    name="description"
-                    value={eventForm.description}
+                  <select
+                    name="eventType"
+                    value={eventForm.eventType}
                     onChange={handleInputChange}
-                    rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Describe your event..."
-                  ></textarea>
+                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  >
+                    {["Conference", "Workshop", "Seminar", "Webinar", "Networking", "Festival"].map(type => (
+                      <option key={type} value={type} className="bg-slate-800">{type}</option>
+                    ))}
+                  </select>
                 </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Event Description
+                </label>
+                <textarea
+                  name="description"
+                  value={eventForm.description}
+                  onChange={handleInputChange}
+                  rows={4}
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Describe your event..."
+                ></textarea>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
                     Event Date *
                   </label>
                   <input
@@ -2005,11 +2435,11 @@ const App = () => {
                     name="startDate"
                     value={eventForm.startDate}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-slate-300 mb-2">
                     Start Time *
                   </label>
                   <input
@@ -2017,188 +2447,202 @@ const App = () => {
                     name="startTime"
                     value={eventForm.startTime}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Event Image
-                  </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleImageUpload}
-                      accept="image/*"
-                      className="hidden"
-                    />
-                    <div onClick={() => fileInputRef.current?.click()} className="cursor-pointer">
-                      {eventForm.imagePreview ? (
-                        <img src={eventForm.imagePreview} alt="Preview" className="mx-auto h-32 w-auto object-contain rounded" />
-                      ) : (
-                        <>
-                          <UploadCloud className="mx-auto h-12 w-12 text-gray-400" />
-                          <p className="mt-2 text-sm text-gray-600">
-                            <span className="font-medium text-blue-600 hover:text-blue-500">Upload a file</span> or drag and drop
-                          </p>
-                          <p className="text-xs text-gray-500 mt-1">PNG, JPG, GIF up to 10MB</p>
-                        </>
-                      )}
-                    </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Event Image
+                </label>
+                <div className="border-2 border-dashed border-slate-600 rounded-xl p-8 text-center bg-slate-700/50">
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="cursor-pointer"
+                  >
+                    {eventForm.imagePreview ? (
+                      <img
+                        src={eventForm.imagePreview}
+                        alt="Preview"
+                        className="mx-auto h-32 w-auto object-contain rounded-lg"
+                      />
+                    ) : (
+                      <>
+                        <UploadCloud className="mx-auto h-12 w-12 text-slate-400" />
+                        <p className="mt-2 text-sm text-slate-400">
+                          <span className="font-medium text-purple-400 hover:text-purple-300">
+                            Upload a file
+                          </span>{" "}
+                          or drag and drop
+                        </p>
+                        <p className="text-xs text-slate-500 mt-1">
+                          PNG, JPG, GIF up to 10MB
+                        </p>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
-            </>
+            </div>
           );
         case 1:
           return (
-            <>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Location (City/Region)
-                  </label>
-                  <input
-                    type="text"
-                    name="location"
-                    value={eventForm.location}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="e.g., San Francisco, CA"
-                  />
-                </div>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Location (City/Region)
+                </label>
+                <input
+                  type="text"
+                  name="location"
+                  value={eventForm.location}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="e.g., San Francisco, CA"
+                />
               </div>
-            </>
+            </div>
           );
         case 2:
           return (
-            <>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Venue Name *
-                  </label>
-                  <input
-                    type="text"
-                    name="venueName"
-                    value={eventForm.venueName}
-                    onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter venue name"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Venue Address *
-                  </label>
-                  <textarea
-                    name="venueAddress"
-                    value={eventForm.venueAddress}
-                    onChange={handleInputChange}
-                    rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter full venue address"
-                  ></textarea>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Venue Capacity *
-                  </label>
-                  <input
-                    type="number"
-                    name="venueCapacity"
-                    value={eventForm.venueCapacity}
-                    onChange={handleInputChange}
-                    min="1"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="e.g., 200"
-                  />
-                </div>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Venue Name *
+                </label>
+                <input
+                  type="text"
+                  name="venueName"
+                  value={eventForm.venueName}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Enter venue name"
+                />
               </div>
-            </>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Venue Address *
+                </label>
+                <textarea
+                  name="venueAddress"
+                  value={eventForm.venueAddress}
+                  onChange={handleInputChange}
+                  rows={3}
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Enter full venue address"
+                ></textarea>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Venue Capacity *
+                </label>
+                <input
+                  type="number"
+                  name="venueCapacity"
+                  value={eventForm.venueCapacity}
+                  onChange={handleInputChange}
+                  min="1"
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="e.g., 200"
+                />
+              </div>
+            </div>
           );
         case 3:
           return (
-            <>
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Ticket Price *
-                  </label>
-                  <div className="flex items-center">
-                    <span className="text-gray-600 mr-2">$</span>
-                    <input
-                      type="number"
-                      name="ticketPrice"
-                      value={eventForm.ticketPrice}
-                      onChange={handleInputChange}
-                      min="0"
-                      step="0.01"
-                      className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="0.00"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">Enter 0 for free events</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Max Tickets (optional)
-                  </label>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Ticket Price *
+                </label>
+                <div className="flex items-center">
+                  <span className="text-slate-400 mr-2">$</span>
                   <input
                     type="number"
-                    name="maxTickets"
-                    value={eventForm.maxTickets}
+                    name="ticketPrice"
+                    value={eventForm.ticketPrice}
                     onChange={handleInputChange}
-                    min="1"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="100"
+                    min="0"
+                    step="0.01"
+                    className="flex-1 px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    placeholder="0.00"
                   />
                 </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  Enter 0 for free events
+                </p>
               </div>
-            </>
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Max Tickets (optional)
+                </label>
+                <input
+                  type="number"
+                  name="maxTickets"
+                  value={eventForm.maxTickets}
+                  onChange={handleInputChange}
+                  min="1"
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="100"
+                />
+              </div>
+            </div>
           );
         case 4:
           return (
-            <>
-              <div className="space-y-6">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="text-lg font-medium text-blue-900 mb-2">Review Your Event</h3>
-                  <p className="text-blue-800 text-sm">
-                    Please review all details. You can edit after publishing.
+            <div className="space-y-6">
+              <div className="bg-purple-900/30 border border-purple-800 rounded-xl p-4">
+                <h3 className="text-lg font-medium text-purple-300 mb-2">
+                  Review Your Event
+                </h3>
+                <p className="text-purple-400 text-sm">
+                  Please review all details. You can edit after publishing.
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-medium text-slate-300">Title</h4>
+                  <p className="text-slate-400">{eventForm.title || "— Not set —"}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-slate-300">Date & Time</h4>
+                  <p className="text-slate-400">
+                    {eventForm.startDate
+                      ? `${new Date(eventForm.startDate).toLocaleDateString()} at ${eventForm.startTime}`
+                      : "— Not set —"}
                   </p>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-medium text-gray-900">Title</h4>
-                    <p className="text-gray-600">{eventForm.title || "— Not set —"}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Date & Time</h4>
-                    <p className="text-gray-600">
-                      {eventForm.startDate ? `${new Date(eventForm.startDate).toLocaleDateString()} at ${eventForm.startTime}` : "— Not set —"}
-                    </p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Venue</h4>
-                    <p className="text-gray-600">{eventForm.venueName || "— Not set —"}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Capacity</h4>
-                    <p className="text-gray-600">{eventForm.venueCapacity || "— Not set —"}</p>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Price</h4>
-                    <p className="text-gray-600">${parseFloat(eventForm.ticketPrice).toFixed(2)}</p>
-                  </div>
+                <div>
+                  <h4 className="font-medium text-slate-300">Venue</h4>
+                  <p className="text-slate-400">{eventForm.venueName || "— Not set —"}</p>
                 </div>
-                {eventForm.imagePreview && (
-                  <div>
-                    <h4 className="font-medium text-gray-900">Event Image</h4>
-                    <img src={eventForm.imagePreview} alt="Preview" className="mt-2 w-32 h-32 object-cover rounded-lg" />
-                  </div>
-                )}
+                <div>
+                  <h4 className="font-medium text-slate-300">Capacity</h4>
+                  <p className="text-slate-400">{eventForm.venueCapacity || "— Not set —"}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-slate-300">Price</h4>
+                  <p className="text-slate-400">${parseFloat(eventForm.ticketPrice).toFixed(2)}</p>
+                </div>
               </div>
-            </>
+              {eventForm.imagePreview && (
+                <div>
+                  <h4 className="font-medium text-slate-300">Event Image</h4>
+                  <img
+                    src={eventForm.imagePreview}
+                    alt="Preview"
+                    className="mt-2 w-32 h-32 object-cover rounded-lg border border-slate-600"
+                  />
+                </div>
+              )}
+            </div>
           );
         default:
           return <div>Unknown Step</div>;
@@ -2206,27 +2650,38 @@ const App = () => {
     };
 
     return (
-      <div className="bg-gray-50 min-h-screen">
+      <div className="bg-gradient-to-r from-purple-800 via-fuchsia-800 to-purple-900 min-h-screen">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-8">
-            <button onClick={() => setCurrentView("dashboard")} className="mb-4 flex items-center text-blue-600 hover:text-blue-800">
+            <button
+              onClick={() => setCurrentView("dashboard")}
+              className="mb-4 flex items-center text-purple-200 hover:text-white"
+            >
               <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
               Back to dashboard
             </button>
-            <h1 className="text-3xl font-bold text-gray-900">Create New Event</h1>
-            <p className="text-gray-600 mt-2">Fill in the details to create your event</p>
+            <h1 className="text-3xl font-bold text-white">Create New Event</h1>
+            <p className="text-purple-200 mt-2">
+              Fill in the details to create your event
+            </p>
           </div>
-          <div className="bg-white rounded-2xl shadow-lg">
-            <div className="border-b border-gray-200">
-              <nav className="flex space-x-8 px-6">
-                {['Event Details', 'Location', 'Venue', 'Tickets', 'Publish'].map((item, index) => (
+          <div className="bg-slate-800 rounded-2xl shadow-xl overflow-hidden border border-slate-700">
+            <div className="border-b border-slate-700">
+              <nav className="flex overflow-x-auto px-6 py-2 scrollbar-hide">
+                {[
+                  "Event Details",
+                  "Location",
+                  "Venue",
+                  "Tickets",
+                  "Publish",
+                ].map((item, index) => (
                   <button
                     key={item}
                     onClick={() => setActiveStep(index)}
-                    className={`py-4 px-1 border-b-2 font-medium text-sm ${
-                      index === activeStep 
-                        ? 'border-blue-500 text-blue-600' 
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    className={`whitespace-nowrap py-3 px-4 text-sm font-medium border-b-2 mx-1 ${
+                      index === activeStep
+                        ? "border-purple-500 text-purple-300"
+                        : "border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-500"
                     }`}
                   >
                     {item}
@@ -2236,12 +2691,12 @@ const App = () => {
             </div>
             <div className="p-6">
               {renderStepContent()}
-              <div className="flex justify-between pt-6">
-                <div className="flex space-x-4">
+              <div className="flex flex-col sm:flex-row sm:justify-between pt-6 gap-4">
+                <div className="flex space-x-3">
                   {activeStep > 0 && (
                     <button
                       onClick={handlePreviousStep}
-                      className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium"
+                      className="px-6 py-3 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 font-medium"
                     >
                       Previous
                     </button>
@@ -2249,23 +2704,23 @@ const App = () => {
                   {activeStep < 4 && (
                     <button
                       onClick={handleNextStep}
-                      className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium"
+                      className="px-6 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-lg font-medium shadow-md"
                     >
                       Next
                     </button>
                   )}
                 </div>
-                <div className="flex space-x-4">
+                <div className="flex space-x-3">
                   <button
                     onClick={handleSaveDraft}
-                    className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium"
+                    className="px-6 py-3 border border-slate-600 rounded-lg text-slate-300 hover:bg-slate-700 font-medium"
                   >
                     Save Draft
                   </button>
                   {activeStep === 4 && (
                     <button
                       onClick={handlePublish}
-                      className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium"
+                      className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium shadow-md"
                     >
                       Publish Event
                     </button>
@@ -2279,87 +2734,99 @@ const App = () => {
     );
   };
 
+  
   const CartPage = () => (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gradient-to-r from-purple-800 via-fuchsia-800 to-purple-900 min-h-screen text-white">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <button 
-            onClick={() => { 
-              setSelectedEvent(null); 
+          <button
+            onClick={() => {
+              setSelectedEvent(null);
               setCheckoutStep(0);
-              setCurrentView("home"); // Navigate back to Events/Home 
-            }} 
-            className="mb-4 flex items-center text-blue-600 hover:text-blue-800"
+              setCurrentView("home");
+            }}
+            className="mb-4 flex items-center text-purple-200 hover:text-white"
           >
             <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
             Back to events
           </button>
-          <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
-          <p className="text-gray-600 mt-2">Review your selections before checkout</p>
+          <h1 className="text-3xl font-bold">Shopping Cart</h1>
+          <p className="text-slate-300 mt-2">Review your selections before checkout</p>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-2xl shadow-lg">
-              <div className="border-b border-gray-200 px-6 py-4">
-                <h2 className="text-xl font-bold text-gray-900">Event Selections ({cart.length})</h2>
+            <div className="bg-slate-800 rounded-2xl shadow-lg border border-slate-700">
+              <div className="border-b border-slate-700 px-6 py-4">
+                <h2 className="text-xl font-bold">Event Selections ({cart.length})</h2>
               </div>
               {cart.length === 0 ? (
                 <div className="p-12 text-center">
-                  <ShoppingCartIcon className="mx-auto h-16 w-16 text-gray-400" />
-                  <h3 className="mt-4 text-xl font-medium text-gray-900">Your cart is empty</h3>
-                  <p className="mt-2 text-gray-600">Browse events and add some to your cart</p>
-                  <button 
-                    onClick={() => { 
-                      setCurrentView("home"); 
-                      setCheckoutStep(0); 
-                    }} 
-                    className="mt-6 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium"
+                  <ShoppingCartIcon className="mx-auto h-16 w-16 text-slate-500" />
+                  <h3 className="mt-4 text-xl font-medium">Your cart is empty</h3>
+                  <p className="mt-2 text-slate-400">Browse events and add some to your cart</p>
+                  <button
+                    onClick={() => {
+                      setCurrentView("home");
+                      setCheckoutStep(0);
+                    }}
+                    className="mt-6 px-6 py-3 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white rounded-lg font-medium"
                   >
                     Browse Events
                   </button>
                 </div>
               ) : (
-                <div className="divide-y divide-gray-200">
-                  {cart.map(item => (
+                <div className="divide-y divide-slate-700">
+                  {cart.map((item) => (
                     <div key={item.id} className="p-6">
                       <div className="flex">
-                        <img src={item.image} alt={item.title} className="w-20 h-20 rounded-lg object-cover" />
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className="w-20 h-20 rounded-lg object-cover"
+                        />
                         <div className="ml-4 flex-1">
                           <div className="flex justify-between">
-                            <h3 className="font-semibold text-gray-900">{item.title}</h3>
-                            <button 
+                            <h3 className="font-semibold">{item.title}</h3>
+                            <button
                               onClick={() => {
-                                setCart(prev => prev.filter(i => i.id !== item.id));
+                                setCart((prev) => prev.filter((i) => i.id !== item.id));
                                 addNotification(`Removed "${item.title}" from cart`, "info");
-                              }} 
-                              className="text-red-500 hover:text-red-700"
+                              }}
+                              className="text-red-400 hover:text-red-300"
                             >
                               <Trash2 className="h-5 w-5" />
                             </button>
                           </div>
-                          <div className="flex items-center text-sm text-gray-600 mt-1">
+                          <div className="flex items-center text-sm text-slate-400 mt-1">
                             <Calendar className="h-4 w-4 mr-1" />
-                            <span>{new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                            <span>
+                              {new Date(item.date).toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </span>
                             <span className="mx-2">•</span>
                             <span>{item.category}</span>
                           </div>
                           <div className="mt-4 flex items-center">
-                            <div className="flex items-center border border-gray-300 rounded-lg">
-                              <button 
-                                onClick={() => updateCart(item.id, 'subtract')} 
-                                className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                            <div className="flex items-center border border-slate-600 rounded-lg bg-slate-700">
+                              <button
+                                onClick={() => updateCart(item.id, "subtract")}
+                                className="px-3 py-1 text-slate-300 hover:bg-slate-600"
                               >
                                 -
                               </button>
-                              <span className="px-3 py-1 min-w-[2rem] text-center">{item.tickets}</span>
-                              <button 
-                                onClick={() => updateCart(item.id, 'add')} 
-                                className="px-3 py-1 text-gray-600 hover:bg-gray-100"
+                              <span className="px-3 py-1 min-w-[2rem] text-center text-white">
+                                {item.tickets}
+                              </span>
+                              <button
+                                onClick={() => updateCart(item.id, "add")}
+                                className="px-3 py-1 text-slate-300 hover:bg-slate-600"
                               >
                                 +
                               </button>
                             </div>
-                            <div className="ml-4 text-lg font-bold text-blue-600">
+                            <div className="ml-4 text-lg font-bold text-blue-400">
                               ${(item.price * item.tickets).toFixed(2)}
                             </div>
                           </div>
@@ -2372,49 +2839,51 @@ const App = () => {
             </div>
           </div>
           <div className="space-y-6">
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
-              <div className="space-y-3">
+            <div className="bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-700">
+              <h2 className="text-xl font-bold mb-4">Order Summary</h2>
+              <div className="space-y-3 text-slate-300">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Subtotal</span>
+                  <span>Subtotal</span>
                   <span className="font-medium">${getSubtotal(cart).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Service Fee (5%)</span>
-                  <span className="font-medium">${(getSubtotal(cart) * 0.05).toFixed(2)}</span>
+                  <span>Service Fee (5%)</span>
+                  <span className="font-medium">
+                    ${(getSubtotal(cart) * 0.05).toFixed(2)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Processing Fee</span>
+                  <span>Processing Fee</span>
                   <span className="font-medium">$2.50</span>
                 </div>
-                <div className="flex justify-between pt-3 border-t border-gray-200">
-                  <span className="font-bold text-gray-900">Total</span>
-                  <span className="font-bold text-lg text-blue-600">
+                <div className="flex justify-between pt-3 border-t border-slate-700">
+                  <span className="font-bold text-white">Total</span>
+                  <span className="font-bold text-lg text-purple-300">
                     ${getTotal(cart).toFixed(2)}
                   </span>
                 </div>
               </div>
               {cart.length > 0 && (
-                <button 
-                  onClick={() => setCheckoutStep(1)} 
-                  className="w-full mt-6 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white py-4 px-4 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg"
+                <button
+                  onClick={() => setCheckoutStep(1)}
+                  className="w-full mt-6 bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white py-4 px-4 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg"
                 >
                   Proceed to Checkout
                 </button>
               )}
             </div>
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Need Help?</h3>
-              <p className="text-gray-600 text-sm mb-3">
+            <div className="bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-700">
+              <h3 className="font-semibold mb-3">Need Help?</h3>
+              <p className="text-slate-400 text-sm mb-3">
                 Contact our support team for assistance with your registration.
               </p>
-              <div className="space-y-2 text-sm">
+              <div className="space-y-2 text-sm text-slate-300">
                 <div className="flex items-center">
-                  <Mail className="h-4 w-4 text-blue-600 mr-2" />
+                  <Mail className="h-4 w-4 text-blue-400 mr-2" />
                   <span>support@eventpro.com</span>
                 </div>
                 <div className="flex items-center">
-                  <Phone className="h-4 w-4 text-blue-600 mr-2" />
+                  <Phone className="h-4 w-4 text-blue-400 mr-2" />
                   <span>+1 (800) 123-4567</span>
                 </div>
               </div>
@@ -2425,320 +2894,6 @@ const App = () => {
     </div>
   );
 
-  const CheckoutDetails = () => (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <button onClick={() => setCheckoutStep(0)} className="mb-4 flex items-center text-blue-600 hover:text-blue-800">
-            <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
-            Back to cart
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
-          <p className="text-gray-600 mt-2">Enter your details to complete your purchase</p>
-        </div>
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Contact Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  First Name *
-                </label>
-                <input
-                  type="text"
-                  value={checkoutData.firstName}
-                  onChange={(e) => updateCheckoutData('firstName', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter first name"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Last Name *
-                </label>
-                <input
-                  type="text"
-                  value={checkoutData.lastName}
-                  onChange={(e) => updateCheckoutData('lastName', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter last name"
-                />
-              </div>
-            </div>
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address *
-              </label>
-              <input
-                type="email"
-                value={checkoutData.email}
-                onChange={(e) => updateCheckoutData('email', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter email address"
-              />
-            </div>
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Phone Number
-              </label>
-              <input
-                type="tel"
-                value={checkoutData.phone}
-                onChange={(e) => updateCheckoutData('phone', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter phone number"
-              />
-            </div>
-          </div>
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Billing Address</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Address Line 1 *
-                </label>
-                <input
-                  type="text"
-                  value={checkoutData.billingAddress}
-                  onChange={(e) => updateCheckoutData('billingAddress', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter street address"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  City *
-                </label>
-                <input
-                  type="text"
-                  value={checkoutData.city}
-                  onChange={(e) => updateCheckoutData('city', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter city"
-                />
-              </div>
-            </div>
-            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  State/Province
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter state"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  ZIP/Postal Code *
-                </label>
-                <input
-                  type="text"
-                  value={checkoutData.zip}
-                  onChange={(e) => updateCheckoutData('zip', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Enter ZIP code"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Country *
-                </label>
-                <select
-                  value={checkoutData.country}
-                  onChange={(e) => updateCheckoutData('country', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option>United States</option>
-                  <option>Canada</option>
-                  <option>United Kingdom</option>
-                  <option>Australia</option>
-                  <option>Germany</option>
-                  <option>France</option>
-                  <option>Japan</option>
-                  <option>India</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-between pt-6">
-            <button onClick={() => setCheckoutStep(0)} className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
-              Back to Cart
-            </button>
-            <button onClick={() => setCheckoutStep(2)} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
-              Continue to Payment
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const CheckoutPayment = () => (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <button onClick={() => setCheckoutStep(1)} className="mb-4 flex items-center text-blue-600 hover:text-blue-800">
-            <ChevronDown className="h-4 w-4 rotate-90 mr-1" />
-            Back to details
-          </button>
-          <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
-          <p className="text-gray-600 mt-2">Enter your payment information to complete your purchase</p>
-        </div>
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Payment Method</h2>
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <input type="radio" name="paymentMethod" id="creditCard" className="mr-2" defaultChecked />
-                <label htmlFor="creditCard" className="text-gray-900">Credit/Debit Card</label>
-              </div>
-              <div className="flex items-center">
-                <input type="radio" name="paymentMethod" id="paypal" className="mr-2" />
-                <label htmlFor="paypal" className="text-gray-900">PayPal</label>
-              </div>
-              <div className="flex items-center">
-                <input type="radio" name="paymentMethod" id="applePay" className="mr-2" />
-                <label htmlFor="applePay" className="text-gray-900">Apple Pay</label>
-              </div>
-            </div>
-          </div>
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Card Details</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Card Number *
-                </label>
-                <input
-                  type="text"
-                  value={checkoutData.cardNumber}
-                  onChange={(e) => updateCheckoutData('cardNumber', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="1234 5678 9012 3456"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Expiry Date *
-                </label>
-                <input
-                  type="text"
-                  value={checkoutData.expiry}
-                  onChange={(e) => updateCheckoutData('expiry', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="MM/YY"
-                />
-              </div>
-            </div>
-            <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                CVV *
-              </label>
-              <input
-                type="text"
-                value={checkoutData.cvv}
-                onChange={(e) => updateCheckoutData('cvv', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="123"
-              />
-            </div>
-          </div>
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Billing Address</h2>
-            <div className="text-sm text-gray-600">
-              <p>Billing address will be used for verification purposes.</p>
-              <p className="mt-1">Current billing address: {checkoutData.billingAddress}, {checkoutData.city}, {checkoutData.zip}, {checkoutData.country}</p>
-            </div>
-          </div>
-          <div className="flex justify-between pt-6">
-            <button onClick={() => setCheckoutStep(1)} className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-medium">
-              Back to Details
-            </button>
-            <button onClick={processCheckout} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
-              Place Order
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const CheckoutConfirmation = () => (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
-            <CheckCircle className="h-8 w-8 text-green-600" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Thank You for Your Order!</h1>
-          <p className="text-gray-600">Your order has been successfully processed.</p>
-        </div>
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium">${getSubtotal(cart).toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Service Fee (5%)</span>
-                <span className="font-medium">${(getSubtotal(cart) * 0.05).toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-600">Processing Fee</span>
-                <span className="font-medium">$2.50</span>
-              </div>
-              <div className="flex justify-between pt-3 border-t border-gray-200">
-                <span className="font-bold text-gray-900">Total</span>
-                <span className="font-bold text-lg text-blue-600">
-                  ${getTotal(cart).toFixed(2)}
-                </span>
-              </div>
-            </div>
-          </div>
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Order Details</h2>
-            <div className="space-y-4">
-              {cart.map(item => (
-                <div key={item.id} className="flex items-center">
-                  <img src={item.image} alt={item.title} className="w-12 h-12 rounded-lg object-cover" />
-                  <div className="ml-4 flex-1">
-                    <h3 className="font-medium text-gray-900">{item.title}</h3>
-                    <div className="text-sm text-gray-600">
-                      {item.tickets} × ${item.price} = ${(item.price * item.tickets).toFixed(2)}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Contact Information</h2>
-            <div className="text-sm text-gray-600">
-              <p>Name: {checkoutData.firstName} {checkoutData.lastName}</p>
-              <p>Email: {checkoutData.email}</p>
-              <p>Phone: {checkoutData.phone}</p>
-            </div>
-          </div>
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Billing Address</h2>
-            <div className="text-sm text-gray-600">
-              <p>{checkoutData.billingAddress}</p>
-              <p>{checkoutData.city}, {checkoutData.zip}, {checkoutData.country}</p>
-            </div>
-          </div>
-          <div className="flex justify-center pt-6">
-            <button onClick={() => { setCheckoutStep(0); setCart([]); }} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium">
-              Continue Shopping
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
 
   const Footer = () => (
     <footer className="bg-gray-900 text-white">
@@ -2912,9 +3067,30 @@ const App = () => {
           setDraftToEdit={setDraftToEdit} 
         />
       )}
-      {checkoutStep === 1 && <CheckoutDetails />}
-      {checkoutStep === 2 && <CheckoutPayment />}
-      {checkoutStep === 3 && <CheckoutConfirmation />}
+      {checkoutStep === 1 && (
+        <CheckoutDetails
+          checkoutData={checkoutData}
+          updateCheckoutData={updateCheckoutData}
+          setCheckoutStep={setCheckoutStep}
+        />
+      )}
+      {checkoutStep === 2 && (
+        <CheckoutPayment
+          checkoutData={checkoutData}
+          updateCheckoutData={updateCheckoutData}
+          setCheckoutStep={setCheckoutStep}
+          processCheckout={processCheckout}
+        />
+      )}
+      {checkoutStep === 3 && (
+        <CheckoutConfirmation
+          cart={cart}
+          checkoutData={checkoutData}
+          setCheckoutStep={setCheckoutStep}
+          setCart={setCart}
+          setCurrentView={setCurrentView}
+        />
+      )}
     </main>
       <Footer />
     </div>
