@@ -159,7 +159,6 @@ const mockEvents = [
 const categories = ["All", "Technology", "Business", "Entertainment", "Healthcare", "Marketing", "Education", "Sports"];
 const priceFilters = ["All", "Free", "Paid"];
 
-// 🔹 Event Card Component
 // 🔹 Event Card Component (with enhanced hover animation)
 const EventCard = ({
   event,
@@ -1123,7 +1122,7 @@ const scrollToSection = (ref) => {
 };
 
 
-// 🔹 Checkout Details (Step 1) — Dark Theme
+// 🔹 Checkout Details — Dark Theme
 const CheckoutDetails = ({
   checkoutData,
   updateCheckoutData,
@@ -2057,7 +2056,7 @@ const App = () => {
               </div>
             </div>
 
-            {/* Draft Events Section — Styled to match */}
+            {/* Draft Events Section */}
             {drafts.length > 0 && (
               <div className="bg-slate-800 rounded-xl shadow mt-8">
                 <div className="px-6 py-4 border-b border-slate-950">
@@ -2087,9 +2086,9 @@ const App = () => {
                             <button
                               onClick={() => {
                                 setDraftToEdit(d); // set the draft to edit
-                                // Optional: pre-fill form and go to organize page
+                                // Optional: pre-fill form and go to organise page
                                 setCurrentView("organize");
-                                // In a real app, you'd pass `d` to pre-fill the form
+                                // In a real website, I would pass `d` to pre-fill the form
                               }}
                               className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                             >
