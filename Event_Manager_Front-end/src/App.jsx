@@ -1550,9 +1550,9 @@ const App = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [draftToEdit, setDraftToEdit] = useState(null);
   const [user] = useState({ 
-    name: "Alex Johnson", 
-    email: "alex.johnson@example.com",
-    avatar: "https://placehold.co/40x40/3b82f6/white?text=AJ",
+    name: "Kossai Al Brawy", 
+    email: "Kossai.AL-Brawy@example.com",
+    avatar: "https://placehold.co/40x40/3b82f6/white?text=KA",
     favorites: [3] 
   });
   const [cart, setCart] = useState([]);
@@ -1567,9 +1567,9 @@ const App = () => {
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState(0);
   const [checkoutData, setCheckoutData] = useState({
-    firstName: "Alex",
-    lastName: "Johnson",
-    email: "alex.johnson@example.com",
+    firstName: "Kossai",
+    lastName: "Al Brawy",
+    email: "Kossai.AL-Brawy@example.com",
     phone: "",
     cardNumber: "",
     expiry: "",
@@ -1577,7 +1577,7 @@ const App = () => {
     billingAddress: "",
     city: "",
     zip: "",
-    country: "United States"
+    country: "United Kingdom"
   });
   const [registrationSuccess, setRegistrationSuccess] = useState(null);
   const [drafts, setDrafts] = useState([]); // state for drafts
