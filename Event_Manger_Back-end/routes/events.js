@@ -1,7 +1,7 @@
 // routes/events.js
 const express = require('express');
 const router = express.Router();
-const { createEvent, getEvents, getEventById, updateEvent, deleteEvent } = require('../controllers/eventController');
+const { createEvent, getEvents, getEventById, updateEvent, deleteEvent, incrementAttendees } = require('../controllers/eventController');
 const validate = require('../middleware/validate');
 const { createEventSchema, updateEventSchema } = require('../validation/eventValidation');
 const upload = require('../middleware/upload');
@@ -17,5 +17,7 @@ router.get('/:id', getEventById);
 
 router.put('/:id', upload.single('image'), validate(updateEventSchema), updateEvent);
 router.delete('/:id', deleteEvent);
+
+router.patch('/:id/register', incrementAttendees);
 
 module.exports = router;
