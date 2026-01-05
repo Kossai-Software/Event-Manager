@@ -54,6 +54,7 @@ const EventCard = ({
   event,
   onRegister,
   onAddToCart,
+  onBookNow,
   isFavorited,
   onToggleFavorite,
   onViewDetails,
@@ -143,7 +144,7 @@ const EventCard = ({
             if (Number(event.price) === 0) {
               onRegister(event);
             } else {
-              onAddToCart(event);
+              onBookNow(event); // Use the new handler
             }
           }}
           className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 flex items-center justify-center shadow-md"
@@ -259,10 +260,10 @@ const FeaturedEventCard = ({
               if (Number(event.price) === 0) {
                 onRegister(event);
               } else {
-                onAddToCart(event);
+                onBookNowPaid(event); 
               }
             }}
-            className="flex-1 bg-gradient-to-r from-purple-700 to-fuchsia-700 hover:from-purple-800 hover:to-fuchsia-800 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg"
+            className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 flex items-center justify-center shadow-md"
           >
             <Plus className="h-5 w-5 mr-2" />
             {Number(event.price) === 0 ? 'Register Now' : 'Book Now'}
@@ -300,312 +301,336 @@ const HomePage = ({
   addNotification,
   handleRegister,
   handleAddToCart,
+  //handleBookNowPaid,
   setSelectedEvent,
   registrationSuccess,
   setRegistrationSuccess,
   aboutRef,
   contactRef,
   searchInputRef,
-  setCurrentView
-}) => (
-  <div className="bg-gradient-to-r  from-purple-800 via-fuchsia-800 to-purple-900 text-white relative overflow-hidden min-h-screen">
-    <div className="bg-gradient-to-r from-yellow-700 via-yellow-500 to-yellow-700 text-white relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-        <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">Discover & Experience Amazing Events</h1>
-          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
-            Find the perfect events for your interests, connect with like-minded people, and create unforgettable experiences.
-          </p>
-          <div className="max-w-xl mx-auto">
-            <div className="relative">
-              <input
-                ref={searchInputRef}
-                type="text"
-                placeholder="Search events, categories, or locations..."
-                className="w-full px-6 py-4 text-gray-900 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    {/* Stats */}
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-13">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {[
-          { value: "10,000+", label: "Events Hosted", color: "text-purple-700 dark:text-purple-400" },
-          { value: "250,000+", label: "Happy Attendees", color: "text-fuchsia-700 dark:text-fuchsia-400" },
-          { value: "98%", label: "Satisfaction Rate", color: "text-purple-700 dark:text-purple-400" },
-          { value: "500+", label: "Event Organizers", color: "text-fuchsia-700 dark:text-fuchsia-400" }
-        ].map((stat, i) => (
-          <div key={i} className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center border border-gray-200 dark:border-gray-700">
-            <div className={`text-3xl font-extrabold ${stat.color}`}>{stat.value}</div>
-            <div className="text-gray-600 dark:text-gray-300 mt-2">{stat.label}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-        <h2 className="text-3xl font-bold text-white mb-4 md:mb-0">
-          {selectedCategory === "All" ? "Filter Events" : `${selectedCategory} Events`}
-        </h2>
-        <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
-          <div className="flex space-x-4">
-            <div className="relative">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-4 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {categories.map(category => (
-                  <option key={category} value={category}>{category}</option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
-            </div>
-            <div className="relative">
-              <select
-                value={priceFilter}
-                onChange={(e) => setPriceFilter(e.target.value)}
-                className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-4 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {priceFilters.map(filter => (
-                  <option key={filter} value={filter}>{filter}</option>
-                ))}
-              </select>
-              <ChevronDown className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
-            </div>
-          </div>
-          <div className="flex space-x-2">
-            <button className="bg-gray-100 hover:bg-gray-200 p-2 rounded-md">
-              <Filter className="h-5 w-5 text-gray-600" />
-            </button>
-            <button onClick={() => setCurrentView("organize")} className="bg-gradient-to-r from-purple-700 to-fuchsia-700 text-white p-2.5 rounded-xl shadow-lg hover:shadow-xl">
-              <Plus className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-      </div>
-      {registrationSuccess && (
-        <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center">
-          <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-          <div>
-            <p className="font-medium text-green-800">
-              Successfully registered for "{registrationSuccess.eventName}" at {registrationSuccess.registrationTime}
+  setCurrentView,
+  setCheckoutStep 
+}) => {
+  // Local handler for "Book Now" from home
+  const handleBookNowFromHome = (event) => {
+    if (Number(event.price) === 0) {
+      handleRegister(event); // free → register instantly
+    } else {
+      handleAddToCart(event); // paid → add to cart
+      setCurrentView("cart"); // go straight to cart/checkout
+      setCheckoutStep(0);     // reset to cart step
+    }
+  };
+
+  return (
+    <div className="bg-gradient-to-r  from-purple-800 via-fuchsia-800 to-purple-900 text-white relative overflow-hidden min-h-screen">
+      <div className="bg-gradient-to-r from-yellow-700 via-yellow-500 to-yellow-700 text-white relative overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6">Discover & Experience Amazing Events</h1>
+            <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto">
+              Find the perfect events for your interests, connect with like-minded people, and create unforgettable experiences.
             </p>
-            <p className="text-green-700 text-sm mt-1">Check your email for confirmation details.</p>
-          </div>
-          <button onClick={() => setRegistrationSuccess(null)} className="ml-auto text-green-500 hover:text-green-700">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-      )}
-      {selectedCategory === "All" && (
-        <div className="mb-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {events.filter(event => event.featured).map(event => (
-              <FeaturedEventCard 
-                key={event.id} 
-                event={event} 
-                onRegister={handleRegister} 
-                onAddToCart={handleAddToCart} 
-                isFavorited={favorites.includes(event.id)} 
-                onToggleFavorite={(id) => {
-                  setFavorites(prev => {
-                    const isFav = prev.includes(id);
-                    const newFavs = isFav
-                      ? prev.filter(i => i !== id)
-                      : [...prev, id];
-                    const event = events.find(e => e.id === id);
-                    const message = isFav
-                      ? `Removed "${event.title}" from favorites`
-                      : `Added "${event.title}" to favorites`;
-                    addNotification(message, isFav ? 'info' : 'success');
-                    return newFavs;
-                  });
-                }}
-                onViewDetails={() => setSelectedEvent(event)}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-      
-      <h3 className="text-2xl font-bold text-white mb-6">All Events</h3>   
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-        {filteredEvents.map(event => (
-          <EventCard 
-            key={event.id} 
-            event={event} 
-            onRegister={handleRegister} 
-            onAddToCart={handleAddToCart} 
-            isFavorited={favorites.includes(event.id)} 
-            onToggleFavorite={(id) => {
-              setFavorites(prev => {
-                const isFav = prev.includes(id);
-                const newFavs = isFav
-                  ? prev.filter(i => i !== id)
-                  : [...prev, id];
-                const event = events.find(e => e.id === id);
-                const message = isFav
-                  ? `Removed "${event.title}" from favorites`
-                  : `Added "${event.title}" to favorites`;
-                addNotification(message, isFav ? 'info' : 'success');
-                return newFavs;
-              });
-            }}
-            onViewDetails={() => setSelectedEvent(event)}
-          />
-        ))}
-      </div>
-      {filteredEvents.length === 0 && (
-        <div className="text-center py-12">
-          <Calendar className="mx-auto h-12 w-12 text-gray-400" />
-          <h3 className="mt-2 text-lg font-medium text-gray-900">No events found</h3>
-          <p className="mt-1 text-gray-500">Try adjusting your search or filter to find what you're looking for.</p>
-          <button onClick={() => { setSelectedCategory("All"); setPriceFilter("All"); setSearchTerm(""); }} className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm">
-            Reset Filters
-          </button>
-        </div>
-      )}
-    </div>
-    {/* About & Contact Sections */}
-    <div ref={aboutRef} className=" bg-gradient-to-r  from-purple-600 via-fuchsia-700 to-purple-700 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 mb-6">
-      <div className="text-center mb-16">
-        <h2 className="text-3xl font-bold text-gray-900">About EventPro</h2>
-        <p className="mt-4 text-xl text-white max-w-3xl mx-auto">
-          We're on a mission to connect people through shared experiences and unforgettable events.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="text-center p-6">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100">
-            <Users className="h-8 w-8 text-blue-600" />
-          </div>
-          <h3 className="mt-4 text-xl font-bold text-gray-900">Community Focused</h3>
-          <p className="mt-2 text-white">
-            We believe in the power of bringing people together to share ideas, learn, and grow.
-          </p>
-        </div>
-        <div className="text-center p-6">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
-            <Target className="h-8 w-8 text-green-600" />
-          </div>
-          <h3 className="mt-4 text-xl font-bold text-gray-900">Quality Events</h3>
-          <p className="mt-2 text-white">
-            We curate high-quality events with verified organisers to ensure the best experience.
-          </p>
-        </div>
-        <div className="text-center p-6">
-          <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-purple-100">
-            <Award className="h-8 w-8 text-purple-600" />
-          </div>
-          <h3 className="mt-4 text-xl font-bold text-gray-900">Trusted Platform</h3>
-          <p className="mt-2 text-white">
-            With over 250,000 satisfied attendees, we're the trusted choice for event discovery.
-          </p>
-        </div>
-      </div>
-    </div>
-    <div ref={contactRef} className="bg-gradient-to-r from-purple-800 via-fuchsia-800 to-purple-900 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 mb-4">
-      <div className="text-center mb-16">
-        <h2 className="text-3xl font-bold text-white">Contact Us</h2>
-        <p className="mt-4 text-xl text-slate-300 max-w-3xl mx-auto">
-          Have questions or need assistance? Our team is here to help.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-        <div>
-          <h3 className="text-2xl font-bold text-white mb-6">Get in Touch</h3>
-          <div className="space-y-6">
-            <div className="flex items-start">
-              <Map className="h-6 w-6 text-green-400 mt-1 flex-shrink-0" />
-              <div className="ml-4">
-                <h4 className="text-lg font-medium text-white">Address</h4>
-                <p className="mt-1 text-slate-300">
-                  123 Event Street<br />
-                  San Francisco, CA 94103<br />
-                  United States
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start">
-              <Phone className="h-6 w-6 text-green-400 mt-1 flex-shrink-0" />
-              <div className="ml-4">
-                <h4 className="text-lg font-medium text-white">Phone</h4>
-                <p className="mt-1 text-slate-300">
-                  +1 (800) 123-4567<br />
-                  Mon-Fri, 9am-6pm PST
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start">
-              <Mail className="h-6 w-6 text-green-400 mt-1 flex-shrink-0" />
-              <div className="ml-4">
-                <h4 className="text-lg font-medium text-white">Email</h4>
-                <p className="mt-1 text-slate-300">
-                  support@eventpro.com<br />
-                  info@eventpro.com
-                </p>
+            <div className="max-w-xl mx-auto">
+              <div className="relative">
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search events, categories, or locations..."
+                  className="w-full px-6 py-4 text-gray-900 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+                <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
               </div>
             </div>
           </div>
         </div>
-        <div className="bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-700">
-          <h3 className="text-2xl font-bold text-white mb-6">Send us a Message</h3>
-          <form className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-1">Name</label>
-              <input
-                type="text"
-                id="name"
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
-                placeholder="Your name"
-              />
+      </div>
+
+      {/* Stats */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 -mt-13">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[
+            { value: "10,000+", label: "Events Hosted", color: "text-purple-700 dark:text-purple-400" },
+            { value: "250,000+", label: "Happy Attendees", color: "text-fuchsia-700 dark:text-fuchsia-400" },
+            { value: "98%", label: "Satisfaction Rate", color: "text-purple-700 dark:text-purple-400" },
+            { value: "500+", label: "Event Organizers", color: "text-fuchsia-700 dark:text-fuchsia-400" }
+          ].map((stat, i) => (
+            <div key={i} className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center border border-gray-200 dark:border-gray-700">
+              <div className={`text-3xl font-extrabold ${stat.color}`}>{stat.value}</div>
+              <div className="text-gray-600 dark:text-gray-300 mt-2">{stat.label}</div>
             </div>
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1">Email</label>
-              <input
-                type="email"
-                id="email"
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
-                placeholder="your@email.com"
-              />
+          ))}
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+          <h2 className="text-3xl font-bold text-white mb-4 md:mb-0">
+            {selectedCategory === "All" ? "Filter Events" : `${selectedCategory} Events`}
+          </h2>
+          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
+            <div className="flex space-x-4">
+              <div className="relative">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-4 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {categories.map(category => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+              </div>
+              <div className="relative">
+                <select
+                  value={priceFilter}
+                  onChange={(e) => setPriceFilter(e.target.value)}
+                  className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-4 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {priceFilters.map(filter => (
+                    <option key={filter} value={filter}>{filter}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-3 top-2.5 h-5 w-5 text-gray-400" />
+              </div>
             </div>
-            <div>
-              <label htmlFor="subject" className="block text-sm font-medium text-slate-300 mb-1">Subject</label>
-              <input
-                type="text"
-                id="subject"
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
-                placeholder="What is this regarding?"
-              />
+            <div className="flex space-x-2">
+              <button className="bg-gray-100 hover:bg-gray-200 p-2 rounded-md">
+                <Filter className="h-5 w-5 text-gray-600" />
+              </button>
+              <button onClick={() => setCurrentView("organize")} className="bg-gradient-to-r from-purple-700 to-fuchsia-700 text-white p-2.5 rounded-xl shadow-lg hover:shadow-xl">
+                <Plus className="h-5 w-5" />
+              </button>
             </div>
+          </div>
+        </div>
+
+        {registrationSuccess && (
+          <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4 flex items-center">
+            <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
             <div>
-              <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-1">Message</label>
-              <textarea
-                id="message"
-                rows={4}
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
-                placeholder="Your message..."
-              ></textarea>
+              <p className="font-medium text-green-800">
+                Successfully registered for "{registrationSuccess.eventName}" at {registrationSuccess.registrationTime}
+              </p>
+              <p className="text-green-700 text-sm mt-1">Check your email for confirmation details.</p>
             </div>
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 shadow-lg"
-            >
-              Send Message
+            <button onClick={() => setRegistrationSuccess(null)} className="ml-auto text-green-500 hover:text-green-700">
+              <X className="h-5 w-5" />
             </button>
-          </form>
+          </div>
+        )}
+
+        {selectedCategory === "All" && (
+          <div className="mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {events.filter(event => event.featured).map(event => (
+                <FeaturedEventCard
+                  key={event.id}
+                  event={event}
+                  onRegister={handleRegister}
+                  onAddToCart={handleAddToCart}
+                  onBookNow={handleBookNowFromHome} // NEW PROP
+                  isFavorited={favorites.includes(event.id)}
+                  onToggleFavorite={(id) => {
+                    setFavorites(prev => {
+                      const isFav = prev.includes(id);
+                      const newFavs = isFav
+                        ? prev.filter(i => i !== id)
+                        : [...prev, id];
+                      const event = events.find(e => e.id === id);
+                      const message = isFav
+                        ? `Removed "${event.title}" from favorites`
+                        : `Added "${event.title}" to favorites`;
+                      addNotification(message, isFav ? 'info' : 'success');
+                      return newFavs;
+                    });
+                  }}
+                  onViewDetails={() => setSelectedEvent(event)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        <h3 className="text-2xl font-bold text-white mb-6">All Events</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+          {filteredEvents.map(event => (
+            <EventCard
+              key={event.id}
+              event={event}
+              onRegister={handleRegister}
+              onAddToCart={handleAddToCart}
+              onBookNow={handleBookNowFromHome} // NEW PROP
+              isFavorited={favorites.includes(event.id)}
+              onToggleFavorite={(id) => {
+                setFavorites(prev => {
+                  const isFav = prev.includes(id);
+                  const newFavs = isFav
+                    ? prev.filter(i => i !== id)
+                    : [...prev, id];
+                  const event = events.find(e => e.id === id);
+                  const message = isFav
+                    ? `Removed "${event.title}" from favorites`
+                    : `Added "${event.title}" to favorites`;
+                  addNotification(message, isFav ? 'info' : 'success');
+                  return newFavs;
+                });
+              }}
+              onViewDetails={() => setSelectedEvent(event)}
+            />
+          ))}
+        </div>
+
+        {filteredEvents.length === 0 && (
+          <div className="text-center py-12">
+            <Calendar className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-lg font-medium text-gray-900">No events found</h3>
+            <p className="mt-1 text-gray-500">Try adjusting your search or filter to find what you're looking for.</p>
+            <button onClick={() => { setSelectedCategory("All"); setPriceFilter("All"); setSearchTerm(""); }} className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm">
+              Reset Filters
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* About & Contact Sections */}
+      <div ref={aboutRef} className=" bg-gradient-to-r  from-purple-600 via-fuchsia-700 to-purple-700 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 mb-6">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold text-gray-900">About EventPro</h2>
+          <p className="mt-4 text-xl text-white max-w-3xl mx-auto">
+            We're on a mission to connect people through shared experiences and unforgettable events.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="text-center p-6">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-100">
+              <Users className="h-8 w-8 text-blue-600" />
+            </div>
+            <h3 className="mt-4 text-xl font-bold text-gray-900">Community Focused</h3>
+            <p className="mt-2 text-white">
+              We believe in the power of bringing people together to share ideas, learn, and grow.
+            </p>
+          </div>
+          <div className="text-center p-6">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100">
+              <Target className="h-8 w-8 text-green-600" />
+            </div>
+            <h3 className="mt-4 text-xl font-bold text-gray-900">Quality Events</h3>
+            <p className="mt-2 text-white">
+              We curate high-quality events with verified organisers to ensure the best experience.
+            </p>
+          </div>
+          <div className="text-center p-6">
+            <div className="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-purple-100">
+              <Award className="h-8 w-8 text-purple-600" />
+            </div>
+            <h3 className="mt-4 text-xl font-bold text-gray-900">Trusted Platform</h3>
+            <p className="mt-2 text-white">
+              With over 250,000 satisfied attendees, we're the trusted choice for event discovery.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div ref={contactRef} className="bg-gradient-to-r from-purple-800 via-fuchsia-800 to-purple-900 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 mb-4">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold text-white">Contact Us</h2>
+          <p className="mt-4 text-xl text-slate-300 max-w-3xl mx-auto">
+            Have questions or need assistance? Our team is here to help.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div>
+            <h3 className="text-2xl font-bold text-white mb-6">Get in Touch</h3>
+            <div className="space-y-6">
+              <div className="flex items-start">
+                <Map className="h-6 w-6 text-green-400 mt-1 flex-shrink-0" />
+                <div className="ml-4">
+                  <h4 className="text-lg font-medium text-white">Address</h4>
+                  <p className="mt-1 text-slate-300">
+                    123 Event Street<br />
+                    San Francisco, CA 94103<br />
+                    United States
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start">
+                <Phone className="h-6 w-6 text-green-400 mt-1 flex-shrink-0" />
+                <div className="ml-4">
+                  <h4 className="text-lg font-medium text-white">Phone</h4>
+                  <p className="mt-1 text-slate-300">
+                    +1 (800) 123-4567<br />
+                    Mon-Fri, 9am-6pm PST
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start">
+                <Mail className="h-6 w-6 text-green-400 mt-1 flex-shrink-0" />
+                <div className="ml-4">
+                  <h4 className="text-lg font-medium text-white">Email</h4>
+                  <p className="mt-1 text-slate-300">
+                    support@eventpro.com<br />
+                    info@eventpro.com
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-700">
+            <h3 className="text-2xl font-bold text-white mb-6">Send us a Message</h3>
+            <form className="space-y-4">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-1">Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                  placeholder="Your name"
+                />
+              </div>
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1">Email</label>
+                <input
+                  type="email"
+                  id="email"
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                  placeholder="your@email.com"
+                />
+              </div>
+              <div>
+                <label htmlFor="subject" className="block text-sm font-medium text-slate-300 mb-1">Subject</label>
+                <input
+                  type="text"
+                  id="subject"
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                  placeholder="What is this regarding?"
+                />
+              </div>
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-1">Message</label>
+                <textarea
+                  id="message"
+                  rows={4}
+                  className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder-slate-400"
+                  placeholder="Your message..."
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-700 hover:to-fuchsia-700 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 shadow-lg"
+              >
+                Send Message
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 // Navigation (moved outside App)
 const Navigation = ({
@@ -1643,6 +1668,32 @@ const App = () => {
     }];
   });
   addNotification(`Added "${event.title}" to cart`, 'success');
+};
+
+// Handle "Book Now" for paid events → go straight to checkout
+const handleBookNowPaid = (event) => {
+  // Ensure it's paid
+  if (Number(event.price) === 0) {
+    handleRegister(event);
+    return;
+  }
+
+  // Add to cart (or increment if already there)
+  setCart(prev => {
+    const existing = prev.find(item => item.id === event.id);
+    if (existing) {
+      return prev.map(item =>
+        item.id === event.id ? { ...item, tickets: item.tickets + 1 } : item
+      );
+    }
+    return [...prev, { ...event, tickets: 1, price: Number(event.price) || 0 }];
+  });
+
+  // Immediately navigate to cart + reset any other state
+  setCheckoutStep(0);
+  setCurrentView("cart");
+  setSelectedEvent(null);
+  addNotification(`Added "${event.title}" to cart and proceeding to checkout`, 'success');
 };
 
   // Update cart quantity
@@ -3092,6 +3143,7 @@ const App = () => {
           addNotification={addNotification}
           handleRegister={handleRegister}
           handleAddToCart={handleAddToCart}
+          //handleBookNowPaid={handleBookNowPaid}
           setSelectedEvent={setSelectedEvent}
           registrationSuccess={registrationSuccess}
           setRegistrationSuccess={setRegistrationSuccess}
@@ -3099,6 +3151,7 @@ const App = () => {
           contactRef={contactRef}
           searchInputRef={searchInputRef}
           setCurrentView={setCurrentView}
+          setCheckoutStep={setCheckoutStep}
         />
       )}
 
