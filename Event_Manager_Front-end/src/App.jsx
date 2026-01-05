@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { getEvents, getCart, getNotifications } from './api';
 import {
   Search,
   Calendar,
@@ -45,121 +46,10 @@ import {
   UploadCloud // replaces CloudUpload
 } from 'lucide-react';
 
-// 🔹 Mock data for events
-const mockEvents = [
-  {
-    id: 1,
-    title: "Tech Innovation Summit 2025",
-    date: "2025-11-15",
-    time: "09:00 AM",
-    location: "San Francisco Convention Center",
-    category: "Technology",
-    price: 299,
-    attendees: 1250,
-    capacity: 2000,
-    description: "Join industry leaders for the premier technology conference featuring cutting-edge innovations, networking opportunities, and hands-on workshops.",
-    image: "https://placehold.co/400x250/1e40af/white?text=Tech+Summit",
-    organizer: "Tech Innovators Inc.",
-    featured: true,
-    rating: 4.8,
-    reviews: 124,
-    tags: ["AI", "Blockchain", "Cloud Computing", "IoT"]
-  },
-  {
-    id: 2,
-    title: "Global Leadership Conference",
-    date: "2025-12-05",
-    time: "10:00 AM",
-    location: "New York Marriott Marquis",
-    category: "Business",
-    price: 450,
-    attendees: 850,
-    capacity: 1000,
-    description: "Develop your leadership skills with world-renowned speakers, interactive sessions, and practical strategies for modern leadership challenges.",
-    image: "https://placehold.co/400x250/dc2626/white?text=Leadership+Conf",
-    organizer: "Global Leadership Institute",
-    featured: true,
-    rating: 4.6,
-    reviews: 89,
-    tags: ["Leadership", "Strategy", "Management", "Innovation"]
-  },
-  {
-    id: 3,
-    title: "Music & Arts Festival",
-    date: "2025-11-22",
-    time: "06:00 PM",
-    location: "Central Park, NYC",
-    category: "Entertainment",
-    price: 75,
-    attendees: 3500,
-    capacity: 5000,
-    description: "A weekend celebration of music, art, and culture featuring local and international artists across multiple stages and art installations.",
-    image: "https://placehold.co/400x250/7c3aed/white?text=Music+Festival",
-    organizer: "Arts & Culture Collective",
-    featured: false,
-    rating: 4.9,
-    reviews: 312,
-    tags: ["Music", "Art", "Culture", "Performance"]
-  },
-  {
-    id: 4,
-    title: "Healthcare Innovation Forum",
-    date: "2025-12-12",
-    time: "08:30 AM",
-    location: "Boston Medical Center",
-    category: "Healthcare",
-    price: 199,
-    attendees: 420,
-    capacity: 600,
-    description: "Explore the latest advancements in healthcare technology, patient care, and medical research with leading healthcare professionals.",
-    image: "https://placehold.co/400x250/059669/white?text=Healthcare+Forum",
-    organizer: "Medical Innovation Network",
-    featured: false,
-    rating: 4.7,
-    reviews: 67,
-    tags: ["Healthcare", "MedTech", "Research", "Innovation"]
-  },
-  {
-    id: 5,
-    title: "Startup Pitch Competition",
-    date: "2025-11-28",
-    time: "01:00 PM",
-    location: "Silicon Valley Innovation Hub",
-    category: "Business",
-    price: 0,
-    attendees: 320,
-    capacity: 500,
-    description: "Watch emerging startups pitch their innovative ideas to a panel of venture capitalists and industry experts for funding opportunities.",
-    image: "https://placehold.co/400x250/ea580c/white?text=Startup+Pitch",
-    organizer: "Venture Catalyst Group",
-    featured: true,
-    rating: 4.5,
-    reviews: 42,
-    tags: ["Startups", "Investment", "Innovation", "Pitching"]
-  },
-  {
-    id: 6,
-    title: "Digital Marketing Masterclass",
-    date: "2025-12-18",
-    time: "11:00 AM",
-    location: "Chicago Digital Hub",
-    category: "Marketing",
-    price: 149,
-    attendees: 280,
-    capacity: 350,
-    description: "Master the latest digital marketing strategies including SEO, social media, content marketing, and data analytics from industry experts.",
-    image: "https://placehold.co/400x250/0891b2/white?text=Marketing+Class",
-    organizer: "Digital Growth Academy",
-    featured: false,
-    rating: 4.4,
-    reviews: 56,
-    tags: ["Marketing", "SEO", "Social Media", "Analytics"]
-  }
-];
 const categories = ["All", "Technology", "Business", "Entertainment", "Healthcare", "Marketing", "Education", "Sports"];
 const priceFilters = ["All", "Free", "Paid"];
 
-// 🔹 Event Card Component (with enhanced hover animation)
+// Event Card Component
 const EventCard = ({
   event,
   onRegister,
@@ -173,12 +63,13 @@ const EventCard = ({
     onClick={onViewDetails}
   >
     <div className="relative">
-      <img src={event.image} alt={event.title} className="w-full h-48 object-cover" />
-      {event.featured && (
-        <div className="absolute top-4 right-4 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-          Featured
-        </div>
-      )}
+      {/* Use image_url from PostgreSQL or fallback to image */}
+      <img 
+        src={event.image_url || event.image || 'https://via.placeholder.com/400x300?text=No+Image'} 
+        alt={event.title}
+        className="w-full h-48 object-cover"
+      />
+      
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -188,20 +79,21 @@ const EventCard = ({
       >
         <Heart className={`h-5 w-5 ${isFavorited ? 'text-red-500 fill-current' : 'text-gray-600'}`} />
       </button>
+      
       <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 px-3 py-1 rounded-full text-sm font-medium text-blue-600">
         {event.category}
       </div>
-      {event.price === 0 && (
-        <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-          Free
-        </div>
-      )}
-      {event.price > 0 && (
-        <div className="absolute top-4 right-4 bg-amber-400 text-white px-3 py-1 rounded-full text-sm font-medium">
-          Paid
-        </div>
-      )}
+      
+      {/* Price Badges */}
+      <div className="absolute top-4 right-4">
+        {Number(event.price) === 0 ? (
+          <div className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">Free</div>
+        ) : (
+          <div className="bg-amber-400 text-white px-3 py-1 rounded-full text-sm font-medium">Paid</div>
+        )}
+      </div>
     </div>
+
     <div className="p-6">
       <div className="flex justify-between items-start">
         <div>
@@ -213,40 +105,51 @@ const EventCard = ({
         </div>
         <div className="flex items-center">
           <Star className="h-4 w-4 text-yellow-400 fill-current" />
-          <span className="ml-1 text-sm font-medium text-gray-700">{event.rating}</span>
-          <span className="ml-1 text-sm text-gray-500">({event.reviews})</span>
+          <span className="ml-1 text-sm font-medium text-gray-700">{event.rating || '4.5'}</span>
+          <span className="ml-1 text-sm text-gray-500">({event.reviews || 0})</span>
         </div>
       </div>
+      
       <p className="text-gray-600 mb-4 line-clamp-2">{event.description}</p>
+      
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center text-gray-600">
           <Calendar className="h-4 w-4 mr-1" />
-          <span className="text-sm">{new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+          <span className="text-sm">
+            {event.date ? new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : "Date TBD"}
+          </span>
         </div>
         <div className="flex items-center text-gray-600">
           <Clock className="h-4 w-4 mr-1" />
-          <span className="text-sm">{event.time}</span>
+          <span className="text-sm">{event.time || "TBD"}</span>
         </div>
       </div>
+
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center text-gray-600">
           <Users className="h-4 w-4 mr-1" />
-          <span className="text-sm">{event.attendees.toLocaleString()} / {event.capacity.toLocaleString()} attendees</span>
+          
+          <span className="text-sm">{(event.capacity || 0).toLocaleString()} max attendees</span>
         </div>
-        <div className={`text-lg font-bold ${event.price === 0 ? 'text-green-600' : 'text-blue-600'}`}>
-          {event.price === 0 ? "Free" : `$${event.price}`}
+        <div className={`text-lg font-bold ${Number(event.price) === 0 ? 'text-green-600' : 'text-blue-600'}`}>
+          {Number(event.price) === 0 ? "Free" : `$${event.price}`}
         </div>
       </div>
+
       <div className="flex space-x-3">
         <button
           onClick={(e) => {
             e.stopPropagation();
-            onRegister(event);
+            if (Number(event.price) === 0) {
+              onRegister(event);
+            } else {
+              onAddToCart(event);
+            }
           }}
           className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 flex items-center justify-center shadow-md"
         >
           <Plus className="h-5 w-5 mr-2" />
-          Register Now
+          {Number(event.price) === 0 ? 'Register Now' : 'Book Now'}
         </button>
         <button
           onClick={(e) => {
@@ -263,7 +166,7 @@ const EventCard = ({
   </div>
 );
 
-// 🔹 Featured Event Card (with enhanced hover animation)
+// Featured Event Card
 const FeaturedEventCard = ({
   event,
   onRegister,
@@ -278,7 +181,12 @@ const FeaturedEventCard = ({
   >
     <div className="bg-white rounded-xl overflow-hidden">
       <div className="relative">
-        <img src={event.image} alt={event.title} className="w-full h-48 object-cover" />
+        <img 
+          src={event.image_url || event.image} 
+          alt={event.title} 
+          className="w-full h-48 object-cover" 
+        />
+        
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -288,64 +196,76 @@ const FeaturedEventCard = ({
         >
           <Heart className={`h-5 w-5 ${isFavorited ? 'text-red-500 fill-current' : 'text-gray-600'}`} />
         </button>
+        
         <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 px-3 py-1 rounded-full text-sm font-medium text-blue-600">
           {event.category}
         </div>
+        
         <div className="absolute bottom-4 right-2 bg-gradient-to-r from-purple-700 to-fuchsia-700 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
           FEATURED
         </div>
-        {event.price === 0 && (
-          <div className="absolute top-2 right-3 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-            FREE
-          </div>
-        )}
-        {event.price > 0 && (
-          <div className="absolute top-4 right-4 bg-amber-400 text-white px-3 py-1 rounded-full text-sm font-medium">
-            Paid
-          </div>
-        )}
+
+        <div className="absolute top-4 right-4">
+          {Number(event.price) === 0 ? (
+            <div className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">FREE</div>
+          ) : (
+            <div className="bg-amber-400 text-white px-3 py-1 rounded-full text-sm font-medium">Paid</div>
+          )}
+        </div>
       </div>
+
       <div className="p-6">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-xl font-bold text-gray-900">{event.title}</h3>
           <div className="flex items-center">
             <Star className="h-4 w-4 text-yellow-400 fill-current" />
-            <span className="ml-1 text-sm font-medium text-gray-700">{event.rating}</span>
-            <span className="ml-1 text-sm text-gray-500">({event.reviews})</span>
+            <span className="ml-1 text-sm font-medium text-gray-700">{event.rating || '4.5'}</span>
+            <span className="ml-1 text-sm text-gray-500">({event.reviews || 0})</span>
           </div>
         </div>
+        
         <div className="flex items-center text-gray-600 mb-3">
           <MapPin className="h-4 w-4 mr-1" />
           <span>{event.location}</span>
         </div>
+        
         <div className="mb-4">
           <div className="flex items-center text-sm text-gray-600 mb-2">
             <Calendar className="h-4 w-4 mr-1" />
-            <span>{new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
+            <span>
+              {event.date ? new Date(event.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : "Date TBD"}
+            </span>
           </div>
           <div className="flex items-center text-sm text-gray-600">
             <Clock className="h-4 w-4 mr-1" />
-            <span>{event.time}</span>
+            <span>{event.time || "TBD"}</span>
           </div>
         </div>
+
         <div className="flex items-center justify-between mb-6">
-          <div className={`text-lg font-bold ${event.price === 0 ? 'text-green-600' : 'text-blue-600'}`}>
-            {event.price === 0 ? "Free" : `$${event.price}`}
+          <div className={`text-lg font-bold ${Number(event.price) === 0 ? 'text-green-600' : 'text-blue-600'}`}>
+            {Number(event.price) === 0 ? "Free" : `$${event.price}`}
           </div>
           <div className="text-sm text-gray-600">
-            {event.capacity - event.attendees} spots left
+            {/* Safety check for attendees and capacity */}
+            {(event.capacity || 0) - (event.attendees || 0)} spots left
           </div>
         </div>
+
         <div className="flex space-x-3">
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onRegister(event);
+              if (Number(event.price) === 0) {
+                onRegister(event);
+              } else {
+                onAddToCart(event);
+              }
             }}
             className="flex-1 bg-gradient-to-r from-purple-700 to-fuchsia-700 hover:from-purple-800 hover:to-fuchsia-800 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center shadow-lg"
           >
             <Plus className="h-5 w-5 mr-2" />
-            Register Now
+            {Number(event.price) === 0 ? 'Register Now' : 'Book Now'}
           </button>
           <button
             onClick={(e) => {
@@ -363,8 +283,7 @@ const FeaturedEventCard = ({
   </div>
 );
 
-
-// 🔹 HomePage Component (now stable — defined outside App)
+// HomePage Component (now stable — defined outside App)
 const HomePage = ({
   searchTerm,
   setSearchTerm,
@@ -487,7 +406,6 @@ const HomePage = ({
       )}
       {selectedCategory === "All" && (
         <div className="mb-12">
-          <h3 className="text-2xl font-bold text-white mb-6">Featured Events</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {events.filter(event => event.featured).map(event => (
               <FeaturedEventCard 
@@ -689,13 +607,15 @@ const HomePage = ({
   </div>
 );
 
-// 🔹 Navigation (moved outside App)
+// Navigation (moved outside App)
 const Navigation = ({
+  events = [],
   currentView,
   setCurrentView,
   selectedEvent,
   setSelectedEvent,
   setCheckoutStep,
+  setNotifications,
   notifications,
   setNotificationOpen,
   notificationOpen,
@@ -838,9 +758,9 @@ const Navigation = ({
                         <div className="flex">
                           <div className="flex-shrink-0">
                             {notification.type === "success" && <CheckCircle className="h-5 w-5 text-green-500" />}
-                            {notification.type === "info" && <LucideInfo className="h-5 w-5 text-blue-500" />} {/* ✅ Lucide */}
+                            {notification.type === "info" && <LucideInfo className="h-5 w-5 text-blue-500" />} {/* Lucide */}
                             {notification.type === "reminder" && <Calendar className="h-5 w-5 text-purple-500" />}
-                            {notification.type === "error" && <LucideAlertCircle className="h-5 w-5 text-red-500" />} {/* ✅ Lucide */}
+                            {notification.type === "error" && <LucideAlertCircle className="h-5 w-5 text-red-500" />} {/* Lucide */}
                           </div>
                           <div className="ml-3 flex-1">
                             <p className="text-sm text-gray-700">{notification.text}</p>
@@ -900,7 +820,8 @@ const Navigation = ({
                 ) : (
                   <div>
                     {favorites.map(favId => {
-                      const event = mockEvents.find(e => e.id === favId);
+                      // Use optional chaining (?.) and ensure events is treated as an array
+                      const event = (events || []).find(e => e.id === favId); 
                       if (!event) return null;
                       return (
                         <div key={favId} className="p-4 hover:bg-gray-50 border-b border-gray-100">
@@ -963,7 +884,7 @@ const Navigation = ({
               <ShoppingCartIcon className="h-5 w-5" />
               {cart.length > 0 && (
                 <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
-                  {cart.reduce((total, item) => total + item.tickets, 0)}
+                  {(cart.reduce((total, item) => total + (Number(item.tickets) || 0), 0)) || 0}
                 </span>
               )}
             </button>
@@ -1099,14 +1020,17 @@ const Navigation = ({
   </nav>
 );
 
-// 🔹 Helper functions
-const getSubtotal = (cart) => cart.reduce((total, item) => total + (item.price * item.tickets), 0);
-const getTotal = (cart) => {
-  const subtotal = getSubtotal(cart);
-  const serviceFee = subtotal * 0.05;
-  const processingFee = 2.50;
-  return subtotal + serviceFee + processingFee;
-};
+// Helper functions
+// Use Number() to prevent string concatenation and NaN errors
+const getSubtotal = (items) =>
+  (items || []).reduce((total, item) => {
+    const price = Number(item.price) || 0;
+    const qty = Number(item.tickets) || 1;
+    return total + (price * qty);
+  }, 0);
+
+const getServiceFee = (items) => getSubtotal(items) * 0.02; // 2%
+const getTotal = (items) => getSubtotal(items) + getServiceFee(items);
 
 const scrollToSection = (ref) => {
   if (ref?.current) {
@@ -1122,7 +1046,7 @@ const scrollToSection = (ref) => {
 };
 
 
-// 🔹 Checkout Details — Dark Theme
+// Checkout Details — Dark Theme
 const CheckoutDetails = ({
   checkoutData,
   updateCheckoutData,
@@ -1287,6 +1211,7 @@ const CheckoutDetails = ({
 );
 
 const CheckoutPayment = ({
+  cart = [],
   checkoutData,
   updateCheckoutData,
   setCheckoutStep,
@@ -1397,8 +1322,7 @@ const CheckoutPayment = ({
             onClick={processCheckout}
             className="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg font-medium shadow-md flex items-center"
           >
-            <Lock className="h-4 w-4 mr-2" />
-            Secure Checkout
+            Confirm and Pay ${getTotal(cart).toFixed(2)}
           </button>
         </div>
       </div>
@@ -1413,11 +1337,10 @@ const CheckoutConfirmation = ({
   setCart,
   setCurrentView
 }) => {
-  const getTotal = (cart) => {
-    const subtotal = cart.reduce((total, item) => total + (item.price * item.tickets), 0);
-    return subtotal + subtotal * 0.05 + 2.5;
-  };
-  const getSubtotal = (cart) => cart.reduce((total, item) => total + (item.price * item.tickets), 0);
+  // Use global helpers
+  const subtotal = getSubtotal(cart);
+  const serviceFee = getServiceFee(cart); // 2%
+  const total = getTotal(cart);
 
   return (
     <div className="bg-gradient-to-r from-purple-800 via-fuchsia-800 to-purple-900 min-h-screen text-white">
@@ -1438,20 +1361,16 @@ const CheckoutConfirmation = ({
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-slate-300">Subtotal</span>
-                <span className="font-medium">${getSubtotal(cart).toFixed(2)}</span>
+                <span className="font-medium">${subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-300">Service Fee (5%)</span>
-                <span className="font-medium">${(getSubtotal(cart) * 0.05).toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-300">Processing Fee</span>
-                <span className="font-medium">$2.50</span>
+                <span className="text-slate-300">Service Fee (2%)</span>
+                <span className="font-medium">${serviceFee.toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t border-slate-700">
                 <span className="font-bold">Total</span>
                 <span className="font-bold text-xl text-purple-300">
-                  ${getTotal(cart).toFixed(2)}
+                  ${total.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -1511,6 +1430,7 @@ const CheckoutConfirmation = ({
               onClick={() => {
                 setCheckoutStep(0);
                 setCart([]);
+                setConfirmedOrder(null);
                 setCurrentView('home');
               }}
               className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium"
@@ -1537,10 +1457,10 @@ const CheckoutConfirmation = ({
   );
 };
 
-// 🔹 Main App
+// Main App
 const App = () => {
-  const [events, setEvents] = useState(mockEvents);
-  const [filteredEvents, setFilteredEvents] = useState(mockEvents);
+  const [events, setEvents] = useState([]);
+  const [filteredEvents, setFilteredEvents] = useState(events);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [priceFilter, setPriceFilter] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
@@ -1548,6 +1468,7 @@ const App = () => {
   const [currentView, setCurrentView] = useState("home");
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [draftToEdit, setDraftToEdit] = useState(null);
+  const [registeredEvents, setRegisteredEvents] = useState(new Set());
   const [user] = useState({ 
     name: "Kossai Al Brawy", 
     email: "Kossai.AL-Brawy@example.com",
@@ -1556,15 +1477,13 @@ const App = () => {
   });
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
-  const [notifications, setNotifications] = useState([
-    { id: 1, text: "Your registration for Tech Innovation Summit is confirmed!", time: "2 hours ago", read: false, type: "success" },
-    { id: 2, text: "New event: Global Leadership Conference added to your interests", time: "1 day ago", read: true, type: "info" },
-    { id: 3, text: "Reminder: Music & Arts Festival is in 3 days", time: "2 days ago", read: true, type: "reminder" }
-  ]);
+  const [notifications, setNotifications] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState([3]);
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState(0);
+  const [confirmedOrder, setConfirmedOrder] = useState(null);
   const [checkoutData, setCheckoutData] = useState({
     firstName: "Kossai",
     lastName: "Al Brawy",
@@ -1585,30 +1504,80 @@ const App = () => {
   const searchInputRef = useRef(null);
   
 
-  // 🔹 Filter events
+  // Filter events
   useEffect(() => {
     let result = [...events];
+
     if (selectedCategory !== "All") {
       result = result.filter(event => event.category === selectedCategory);
     }
+
     if (priceFilter === "Free") {
-      result = result.filter(event => event.price === 0);
+      // Number() handles cases where the DB returns price as a string
+      result = result.filter(event => Number(event.price) === 0);
     } else if (priceFilter === "Paid") {
-      result = result.filter(event => event.price > 0);
+      result = result.filter(event => Number(event.price) > 0);
     }
+
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      result = result.filter(event => 
-        event.title.toLowerCase().includes(term) ||
-        event.location.toLowerCase().includes(term) ||
-        event.category.toLowerCase().includes(term) ||
-        event.organizer.toLowerCase().includes(term)
-      );
+      result = result.filter(event => {
+        // We use (value ?? "") to provide an empty string if the field is null/undefined
+        const title = (event.title ?? "").toLowerCase();
+        const location = (event.location ?? "").toLowerCase();
+        const category = (event.category ?? "").toLowerCase();
+        const organizer = (event.organizer ?? "").toLowerCase();
+
+        return title.includes(term) || 
+              location.includes(term) || 
+              category.includes(term) || 
+              organizer.includes(term);
+      });
     }
+
     setFilteredEvents(result);
   }, [selectedCategory, priceFilter, searchTerm, events]);
 
-  // 🔹 Add notification
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [eventsRes, cartRes, notifRes] = await Promise.all([
+          getEvents(),
+          getCart(),
+          getNotifications()
+        ]);
+
+        // Normalise price and other numeric fields
+        const normalizedEvents = (eventsRes?.data || []).map(event => ({
+          ...event,
+          price: Number(event.price) || 0,
+          capacity: Number(event.capacity) || 0,
+          attendees: Number(event.attendees) || 0,
+          rating: Number(event.rating) || 4.5,
+          reviews: Number(event.reviews) || 0
+        }));
+
+        setEvents(normalizedEvents);
+
+        // Also normalise cart items if they exist
+        const normalizedCart = (cartRes?.data || []).map(item => ({
+          ...item,
+          price: Number(item.price) || 0,
+          tickets: Number(item.tickets) || 1
+        }));
+        setCart(normalizedCart);
+
+        setNotifications(notifRes?.data || []);
+      } catch (error) {
+        console.error("Backend Connection Error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
+
+  // Add notification
   const addNotification = (text, type = "info") => {
     const newNotification = {
       id: Date.now(),
@@ -1620,34 +1589,63 @@ const App = () => {
     setNotifications(prev => [newNotification, ...prev]);
   };
 
-  // 🔹 Handle registration
+  // Handle registration
   const handleRegister = (event) => {
-    setRegistrationSuccess({
-      eventId: event.id,
+    // Prevent duplicate registration
+    if (registeredEvents.has(event.id)) {
+      addNotification(`You're already registered for "${event.title}"`, "info");
+      return;
+    }
+
+    // Proceed with registration
+    setEvents(prevEvents =>
+      prevEvents.map(e =>
+        e.id === event.id ? { ...e, attendees: (e.attendees || 0) + 1 } : e
+      )
+    );
+
+    // Mark as registered
+    setRegisteredEvents(prev => new Set(prev).add(event.id));
+
+    // Show success message (auto-dismissed after 5s)
+    const successData = {
       eventName: event.title,
-      registrationTime: new Date().toLocaleTimeString()
-    });
-    addNotification(`Successfully registered for "${event.title}"! Check your email for confirmation.`, "success");
-    setTimeout(() => setRegistrationSuccess(null), 5000);
+      registrationTime: new Date().toLocaleTimeString(),
+    };
+    setRegistrationSuccess(successData);
+    addNotification(`Registered for ${event.title}!`, 'success');
+
+    // Auto-hide success banner after 5 seconds
+    setTimeout(() => {
+      setRegistrationSuccess(null);
+    }, 5000); // 5000 millieseconds = 5 seconds
   };
 
   // 🔹 Add to cart
   const handleAddToCart = (event) => {
-    setCart(prev => {
-      const existing = prev.find(item => item.id === event.id);
-      if (existing) {
-        addNotification(`Added another ticket for "${event.title}"`, "info");
-        return prev.map(item =>
-          item.id === event.id ? { ...item, tickets: item.tickets + 1 } : item
-        );
-      } else {
-        addNotification(`Added "${event.title}" to your cart`, "success");
-        return [...prev, { ...event, tickets: 1 }];
-      }
-    });
-  };
+  setCart(prev => {
+    if (Number(event.price) === 0) {
+      // Free events should register instantly, not go to cart
+      handleRegister(event);
+      return prev; // don't add to cart
+    }
+    const existing = prev.find(item => item.id === event.id);
+    if (existing) {
+      return prev.map(item =>
+        item.id === event.id ? { ...item, tickets: item.tickets + 1 } : item
+      );
+    }
+    // Ensure price is a number
+    return [...prev, { 
+      ...event, 
+      tickets: 1,
+      price: Number(event.price) || 0 
+    }];
+  });
+  addNotification(`Added "${event.title}" to cart`, 'success');
+};
 
-  // 🔹 Update cart quantity
+  // Update cart quantity
   const updateCart = (eventId, action) => {
     setCart(prevCart => 
       prevCart
@@ -1660,31 +1658,69 @@ const App = () => {
     );
   };
 
-  // 🔹 Process checkout
+  // Process checkout
   const processCheckout = () => {
-    if (!checkoutData.firstName || !checkoutData.lastName || !checkoutData.email) {
-      addNotification("Please fill in all required fields", "error");
+    // 1. Validation
+    if (!checkoutData.cardNumber?.trim()) {
+      addNotification("Please enter your card details to proceed", "error");
       return;
     }
-    if (checkoutData.cardNumber.replace(/\s/g, '').length < 16) {
-      addNotification("Please enter a valid card number", "error");
-      return;
-    }
-    setCheckoutStep(3);
-    addNotification("Your order has been confirmed! Check your email for details.", "success");
+
+    // Capture current cart as order snapshot BEFORE clearing
+    const orderSnapshot = [...cart];
+
+    addNotification("Processing payment...", "success");
     setTimeout(() => {
+      // 2. REGISTER ALL PAID EVENTS
+      orderSnapshot.forEach(event => {
+        setEvents(prevEvents =>
+          prevEvents.map(e =>
+            e.id === event.id ? { ...e, attendees: (e.attendees || 0) + (Number(event.tickets) || 1) } : e
+          )
+        );
+        setRegisteredEvents(prev => new Set(prev).add(event.id));
+        addNotification(`Registered for ${event.title}!`, 'success');
+      });
+
+      // 3. Clear cart & reset form
       setCart([]);
-      setCheckoutStep(0);
-    }, 3000);
+      setCheckoutData(prev => ({
+        ...prev,
+        cardNumber: '',
+        expiry: '',
+        cvv: ''
+      }));
+
+      // Save order snapshot for confirmation screen
+      setConfirmedOrder(orderSnapshot);
+
+      // 4. Show confirmation
+      setCheckoutStep(3);
+      addNotification("Payment Successful! Your tickets are ready.", "success");
+      window.scrollTo(0, 0);
+    }, 1500);
   };
 
-  // 🔹 Update checkout data
+  // Update checkout data
   const updateCheckoutData = (field, value) => {
     setCheckoutData(prev => ({ ...prev, [field]: value }));
   };
 
   const EventDetailPage = () => {
     if (!selectedEvent) return null;
+
+    // ALWAYS fetch the latest event data from the live `events` state
+    // This ensures attendee count updates immediately after registration
+    const liveEvent = events.find(e => e.id === selectedEvent.id) || selectedEvent;
+
+    // convert string/number values from DB to real numbers
+    const isFree = Number(liveEvent.price) === 0;
+    let attendees = Number(liveEvent.attendees) || 0;
+    const capacity = Number(liveEvent.capacity) || 0;
+    // Prevent negative values (e.g., if attendees > capacity due to race condition)
+    const spotsLeft = Math.max(0, capacity - attendees);
+    const isRegistered = registeredEvents.has(liveEvent.id); // Check registration status
+
     return (
       <div className="bg-gradient-to-r from-purple-800 via-fuchsia-800 to-purple-900 min-h-screen text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -1699,24 +1735,24 @@ const App = () => {
             <div className="lg:col-span-2">
               <div className="bg-slate-800 rounded-2xl shadow-lg overflow-hidden border border-slate-700">
                 <img
-                  src={selectedEvent.image}
-                  alt={selectedEvent.title}
-                  className="w-full h-64 md:h-80 object-cover"
+                  src={liveEvent.image_url || liveEvent.image}
+                  alt={liveEvent.title}
+                  className="w-full h-[400px] object-cover"
                 />
                 <div className="p-8">
                   <div className="flex justify-between items-start mb-6">
                     <div>
                       <span className="inline-block bg-purple-900/50 text-purple-300 text-sm px-3 py-1 rounded-full mb-4">
-                        {selectedEvent.category}
+                        {liveEvent.category}
                       </span>
                       <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                        {selectedEvent.title}
+                        {liveEvent.title}
                       </h1>
                     </div>
                     <div className="flex items-center">
                       <Star className="h-6 w-6 text-yellow-400 fill-current mr-2" />
-                      <span className="text-xl font-bold text-white">{selectedEvent.rating}</span>
-                      <span className="ml-2 text-slate-400">({selectedEvent.reviews} reviews)</span>
+                      <span className="text-xl font-bold text-white">{liveEvent.rating}</span>
+                      <span className="ml-2 text-slate-400">({liveEvent.reviews} reviews)</span>
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -1725,7 +1761,7 @@ const App = () => {
                       <div>
                         <div className="text-sm text-slate-400">Date</div>
                         <div className="font-medium text-white">
-                          {new Date(selectedEvent.date).toLocaleDateString('en-US', {
+                          {new Date(liveEvent.date).toLocaleDateString('en-US', {
                             weekday: 'long',
                             month: 'long',
                             day: 'numeric',
@@ -1738,20 +1774,38 @@ const App = () => {
                       <Clock className="h-5 w-5 text-purple-400 mr-3" />
                       <div>
                         <div className="text-sm text-slate-400">Time</div>
-                        <div className="font-medium text-white">{selectedEvent.time}</div>
+                        <div className="font-medium text-white">{liveEvent.time}</div>
                       </div>
                     </div>
                     <div className="flex items-center">
                       <MapPin className="h-5 w-5 text-purple-400 mr-3" />
                       <div>
                         <div className="text-sm text-slate-400">Location</div>
-                        <div className="font-medium text-white">{selectedEvent.location}</div>
+                        <div className="font-medium text-white">{liveEvent.location}</div>
                       </div>
                     </div>
                   </div>
+                  {/* Success Banner: only shown if success matches THIS event */}
+                  {registrationSuccess && registrationSuccess.eventName === selectedEvent.title && (
+                    <div className="mb-6 bg-green-900/50 border border-green-500 rounded-xl p-4 flex items-start animate-in fade-in slide-in-from-top-4 duration-500">
+                      <CheckCircle className="h-6 w-6 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <h3 className="text-green-400 font-bold text-lg">
+                          Successfully registered for "{registrationSuccess.eventName}" at {registrationSuccess.registrationTime}
+                        </h3>
+                        <p className="text-green-200/80">Check your email for confirmation details.</p>
+                      </div>
+                      <button 
+                        onClick={() => setRegistrationSuccess(null)}
+                        className="ml-auto text-green-400 hover:text-white"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                    </div>
+                  )}
                   <div className="mb-8">
                     <h2 className="text-2xl font-bold text-white mb-4">About This Event</h2>
-                    <p className="text-slate-300 leading-relaxed">{selectedEvent.description}</p>
+                    <p className="text-slate-300 leading-relaxed">{liveEvent.description}</p>
                     <div className="mt-6">
                       <h3 className="text-lg font-semibold text-white mb-3">What to Expect</h3>
                       <ul className="space-y-2 text-slate-300">
@@ -1779,7 +1833,7 @@ const App = () => {
                     <div className="flex items-center">
                       <div className="bg-slate-700 border-2 border-dashed rounded-xl w-16 h-16" />
                       <div className="ml-4">
-                        <h3 className="text-lg font-semibold text-white">{selectedEvent.organizer}</h3>
+                        <h3 className="text-lg font-semibold text-white">{liveEvent.organizer}</h3>
                         <p className="text-slate-400">Verified Organizer • 15 events hosted</p>
                       </div>
                     </div>
@@ -1790,7 +1844,7 @@ const App = () => {
                       <div className="flex items-start">
                         <MapPin className="h-5 w-5 text-purple-400 mt-0.5 mr-3 flex-shrink-0" />
                         <div>
-                          <p className="font-medium text-white">{selectedEvent.location}</p>
+                          <p className="font-medium text-white">{liveEvent.location}</p>
                           <p className="text-slate-400 mt-1">
                             Full address will be provided upon registration
                           </p>
@@ -1801,7 +1855,7 @@ const App = () => {
                   <div className="mb-8">
                     <h2 className="text-2xl font-bold text-white mb-4">Event Tags</h2>
                     <div className="flex flex-wrap gap-2">
-                      {selectedEvent.tags.map((tag) => (
+                      {liveEvent.tags?.map((tag) => (
                         <span
                           key={tag}
                           className="bg-purple-900/40 text-purple-300 text-xs px-3 py-1 rounded-full"
@@ -1814,73 +1868,99 @@ const App = () => {
                 </div>
               </div>
             </div>
-            <div className="lg:col-span-1">
-              <div className="bg-slate-800 rounded-2xl shadow-lg p-6 sticky top-8 border border-slate-700">
-                <div className="text-center mb-6">
+          {/* Right Column (Ticket/Action Panel) */}
+          <div className="lg:col-span-1">
+            <div className="bg-slate-800 rounded-2xl shadow-lg p-6 sticky top-8 border border-slate-700">
+              <div className="text-center mb-6">
+                <div className={`text-3xl font-bold ${isFree ? 'text-green-400' : 'text-blue-400'} mb-2`}>
+                  {isFree ? 'Free' : `$${liveEvent.price}`}
+                </div>
+                <div className="text-slate-400">
+                  {spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left
+                </div>
+              </div>
+
+              {/* Progress bar with DYNAMIC labels */}
+              <div className="mb-6">
+                <div className="w-full bg-slate-700 rounded-full h-2.5">
                   <div
-                    className={`text-3xl font-bold ${
-                      selectedEvent.price === 0 ? 'text-green-400' : 'text-blue-400'
-                    } mb-2`}
-                  >
-                    {selectedEvent.price === 0 ? 'Free' : `$${selectedEvent.price}`}
-                  </div>
-                  <div className="text-slate-400">
-                    {selectedEvent.capacity - selectedEvent.attendees} spots left
-                  </div>
+                    className="bg-blue-500 h-2.5 rounded-full transition-all duration-500"
+                    style={{ 
+                      width: capacity > 0 ? `${Math.min(100, (attendees / capacity) * 100).toFixed(1)}%` : '0%' 
+                    }}
+                  ></div>
                 </div>
-                <div className="mb-6">
-                  <div className="w-full bg-slate-700 rounded-full h-2.5">
-                    <div
-                      className="bg-blue-500 h-2.5 rounded-full"
-                      style={{ width: `${((selectedEvent.attendees / selectedEvent.capacity) * 100).toFixed(1)}%` }}
-                    ></div>
-                  </div>
-                  <div className="flex justify-between text-sm text-slate-500 mt-1">
-                    <span>0</span>
-                    <span>{selectedEvent.capacity}</span>
-                  </div>
+                {/* Show actual attendees / capacity */}
+                <div className="flex justify-between text-sm text-slate-500 mt-1">
+                  <span>{attendees}</span>
+                  <span>{capacity}</span> {/* Was hardcoded to 100, now uses real capacity */}
                 </div>
-                <div className="space-y-3 mb-6">
+              </div>
+
+              <div className="space-y-3 mb-6">
+                {/* Disable button if already registered */}
+                <button
+                  onClick={() => {
+                    if (isFree) {
+                      handleRegister(liveEvent);
+                      setSelectedEvent(null);
+                    } else {
+                      handleAddToCart(liveEvent);
+                      setCurrentView('cart');
+                      setCheckoutStep(0);
+                      setSelectedEvent(null);
+                    }
+                  }}
+                  disabled={isRegistered}
+                  className={`w-full py-4 px-4 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg ${
+                    isRegistered
+                      ? 'bg-gray-600 cursor-not-allowed text-gray-400'
+                      : 'bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white'
+                  }`}
+                >
+                  {isRegistered
+                    ? 'Already Registered'
+                    : isFree
+                      ? 'Register Now'
+                      : 'Book Tickets'}
+                </button>
+
+                {!isFree && !isRegistered && (
                   <button
-                    onClick={() => handleRegister(selectedEvent)}
-                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white py-4 px-4 rounded-lg font-bold text-lg transition-all duration-300 shadow-lg"
-                  >
-                    Register Now
-                  </button>
-                  <button
-                    onClick={() => handleAddToCart(selectedEvent)}
+                    onClick={() => handleAddToCart(liveEvent)}
                     className="w-full bg-slate-700 hover:bg-slate-600 text-white py-3 px-4 border border-slate-600 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center"
                   >
                     <ShoppingCartIcon className="h-5 w-5 mr-2" />
                     Add to Cart
                   </button>
+                )}
                   <button
                     onClick={() => {
                       setFavorites((prev) => {
-                        const isFav = prev.includes(selectedEvent.id);
+                        const isFav = prev.includes(liveEvent.id);
                         return isFav
-                          ? prev.filter((id) => id !== selectedEvent.id)
-                          : [...prev, selectedEvent.id];
+                          ? prev.filter((id) => id !== liveEvent.id)
+                          : [...prev, liveEvent.id];
                       });
-                      const message = favorites.includes(selectedEvent.id)
-                        ? `Removed "${selectedEvent.title}" from favorites`
-                        : `Added "${selectedEvent.title}" to favorites`;
-                      addNotification(message, favorites.includes(selectedEvent.id) ? 'info' : 'success');
+                      const message = favorites.includes(liveEvent.id)
+                        ? `Removed "${liveEvent.title}" from favorites`
+                        : `Added "${liveEvent.title}" to favorites`;
+                      addNotification(message, favorites.includes(liveEvent.id) ? 'info' : 'success');
                     }}
                     className={`w-full flex items-center justify-center py-3 px-4 rounded-lg transition-colors border ${
-                      favorites.includes(selectedEvent.id)
+                      favorites.includes(liveEvent.id)
                         ? 'bg-red-900/30 border-red-700 text-red-300'
                         : 'border-slate-600 hover:bg-slate-700'
                     }`}
                   >
                     <Heart
                       className={`h-5 w-5 mr-2 ${
-                        favorites.includes(selectedEvent.id)
+                        favorites.includes(liveEvent.id)
                           ? 'fill-current text-red-400'
                           : 'text-slate-300'
                       }`}
                     />
-                    {favorites.includes(selectedEvent.id)
+                    {favorites.includes(liveEvent.id)
                       ? 'Added to Favorites'
                       : 'Add to Favorites'}
                   </button>
@@ -2074,21 +2154,19 @@ const App = () => {
                             <h3 className="font-semibold text-white">
                               {d.title || 'Untitled Draft'}
                             </h3>
-                            <span className="text-xs text-slate-400 font-medium">
-                              {new Date(d.createdAt).toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric'
-                              })}
-                            </span>
+                              <span className="text-sm">
+                                {events.date 
+                                  ? new Date(events.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) 
+                                  : "Date TBD"}
+                              </span>
                           </div>
                           <div className="mt-2 flex space-x-2">
                             <button
                               onClick={() => {
                                 setDraftToEdit(d); // set the draft to edit
-                                // Optional: pre-fill form and go to organise page
+                                // pre-fill form and go to organize page
                                 setCurrentView("organize");
-                                // In a real website, I would pass `d` to pre-fill the form
+                                // In a real app, I would pass `d` to pre-fill the form
                               }}
                               className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                             >
@@ -2183,7 +2261,7 @@ const App = () => {
     </div>
   );
 
-  // 🔹 OrganizeEventPage with Multi-step Form
+  // OrganiseEventPage with Multi-step Form
 
   const OrganizeEventPage = ({
     user,
@@ -2840,28 +2918,22 @@ const App = () => {
           <div className="space-y-6">
             <div className="bg-slate-800 rounded-2xl shadow-lg p-6 border border-slate-700">
               <h2 className="text-xl font-bold mb-4">Order Summary</h2>
-              <div className="space-y-3 text-slate-300">
-                <div className="flex justify-between">
-                  <span>Subtotal</span>
-                  <span className="font-medium">${getSubtotal(cart).toFixed(2)}</span>
+                <div className="space-y-3 text-slate-300">
+                  <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span className="font-medium">${getSubtotal(cart).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Service Fee (2%)</span>
+                    <span className="font-medium">${getServiceFee(cart).toFixed(2)}</span>
+                  </div>
+                  <div className="flex justify-between pt-3 border-t border-slate-700">
+                    <span className="font-bold text-white">Total</span>
+                    <span className="font-bold text-lg text-purple-300">
+                      ${getTotal(cart).toFixed(2)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span>Service Fee (5%)</span>
-                  <span className="font-medium">
-                    ${(getSubtotal(cart) * 0.05).toFixed(2)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Processing Fee</span>
-                  <span className="font-medium">$2.50</span>
-                </div>
-                <div className="flex justify-between pt-3 border-t border-slate-700">
-                  <span className="font-bold text-white">Total</span>
-                  <span className="font-bold text-lg text-purple-300">
-                    ${getTotal(cart).toFixed(2)}
-                  </span>
-                </div>
-              </div>
               {cart.length > 0 && (
                 <button
                   onClick={() => setCheckoutStep(1)}
@@ -2978,6 +3050,7 @@ const App = () => {
   return (
     <div className="min-h-screen flex flex-col">
       <Navigation
+        events={events}
         currentView={currentView}
         setCurrentView={setCurrentView}
         selectedEvent={selectedEvent}
@@ -3075,6 +3148,7 @@ const App = () => {
       )}
       {checkoutStep === 2 && (
         <CheckoutPayment
+          cart={cart}
           checkoutData={checkoutData}
           updateCheckoutData={updateCheckoutData}
           setCheckoutStep={setCheckoutStep}
@@ -3083,7 +3157,7 @@ const App = () => {
       )}
       {checkoutStep === 3 && (
         <CheckoutConfirmation
-          cart={cart}
+          cart={confirmedOrder}
           checkoutData={checkoutData}
           setCheckoutStep={setCheckoutStep}
           setCart={setCart}
