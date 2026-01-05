@@ -133,7 +133,7 @@ const EventCard = ({
           <span className="text-sm">{(event.capacity || 0).toLocaleString()} max attendees</span>
         </div>
         <div className={`text-lg font-bold ${Number(event.price) === 0 ? 'text-green-600' : 'text-blue-600'}`}>
-          {Number(event.price) === 0 ? "Free" : `$${event.price}`}
+          {Number(event.price) === 0 ? "Free" : `£${event.price}`}
         </div>
       </div>
 
@@ -144,7 +144,7 @@ const EventCard = ({
             if (Number(event.price) === 0) {
               onRegister(event);
             } else {
-              onBookNow(event); // Use the new handler
+              onBookNow(event); 
             }
           }}
           className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white py-3 px-4 rounded-lg font-medium transition-all duration-300 flex items-center justify-center shadow-md"
@@ -245,7 +245,7 @@ const FeaturedEventCard = ({
 
         <div className="flex items-center justify-between mb-6">
           <div className={`text-lg font-bold ${Number(event.price) === 0 ? 'text-green-600' : 'text-blue-600'}`}>
-            {Number(event.price) === 0 ? "Free" : `$${event.price}`}
+            {Number(event.price) === 0 ? "Free" : `£${event.price}`}
           </div>
           <div className="text-sm text-gray-600">
             {/* Safety check for attendees and capacity */}
@@ -953,7 +953,7 @@ const Navigation = ({
                   <div className="p-4 bg-gray-50">
                     <div className="flex justify-between font-bold mb-3">
                       <span>Total:</span>
-                      <span>${getTotal(cart).toFixed(2)}</span>
+                      <span>£{getTotal(cart).toFixed(2)}</span>
                     </div>
                     <button 
                       onClick={() => { 
@@ -995,7 +995,7 @@ const Navigation = ({
             Dashboard
           </button>
           <button onClick={() => { setCurrentView("organize"); setIsMenuOpen(false); }} className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-blue-600 w-full text-left">
-            Organize Event
+            Organise Event
           </button>
           <button 
             onClick={() => {
@@ -1386,16 +1386,16 @@ const CheckoutConfirmation = ({
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-slate-300">Subtotal</span>
-                <span className="font-medium">${subtotal.toFixed(2)}</span>
+                <span className="font-medium">£{subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-300">Service Fee (2%)</span>
-                <span className="font-medium">${serviceFee.toFixed(2)}</span>
+                <span className="font-medium">£{serviceFee.toFixed(2)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t border-slate-700">
                 <span className="font-bold">Total</span>
                 <span className="font-bold text-xl text-purple-300">
-                  ${total.toFixed(2)}
+                  £{total.toFixed(2)}
                 </span>
               </div>
             </div>
@@ -1421,7 +1421,7 @@ const CheckoutConfirmation = ({
                       })}
                     </p>
                     <p className="text-sm font-medium text-slate-200 mt-1">
-                      ${item.price} × {item.tickets} = ${(item.price * item.tickets).toFixed(2)}
+                      £{item.price} × {item.tickets} = £{(item.price * item.tickets).toFixed(2)}
                     </p>
                   </div>
                 </div>
@@ -1880,7 +1880,7 @@ const handleBookNowPaid = (event) => {
                     </div>
                   </div>
                   <div className="mb-8">
-                    <h2 className="text-2xl font-bold text-white mb-4">Organizer</h2>
+                    <h2 className="text-2xl font-bold text-white mb-4">Organiser</h2>
                     <div className="flex items-center">
                       <div className="bg-slate-700 border-2 border-dashed rounded-xl w-16 h-16" />
                       <div className="ml-4">
@@ -1924,7 +1924,7 @@ const handleBookNowPaid = (event) => {
             <div className="bg-slate-800 rounded-2xl shadow-lg p-6 sticky top-8 border border-slate-700">
               <div className="text-center mb-6">
                 <div className={`text-3xl font-bold ${isFree ? 'text-green-400' : 'text-blue-400'} mb-2`}>
-                  {isFree ? 'Free' : `$${liveEvent.price}`}
+                  {isFree ? 'Free' : `£${liveEvent.price}`}
                 </div>
                 <div className="text-slate-400">
                   {spotsLeft} {spotsLeft === 1 ? 'spot' : 'spots'} left
@@ -2123,7 +2123,7 @@ const handleBookNowPaid = (event) => {
                         </div>
                         <div className="mt-3 flex items-center justify-between">
                           <span className={`text-lg font-bold ${event.price === 0 ? 'text-green-600' : 'text-blue-600'}`}>
-                            {event.price === 0 ? "Free" : `$${event.price}`}
+                            {event.price === 0 ? "Free" : `£${event.price}`}
                           </span>
                           <div className="flex space-x-2">
                             <button 
@@ -2955,7 +2955,7 @@ const handleBookNowPaid = (event) => {
                               </button>
                             </div>
                             <div className="ml-4 text-lg font-bold text-blue-400">
-                              ${(item.price * item.tickets).toFixed(2)}
+                              £{(item.price * item.tickets).toFixed(2)}
                             </div>
                           </div>
                         </div>
@@ -2972,16 +2972,16 @@ const handleBookNowPaid = (event) => {
                 <div className="space-y-3 text-slate-300">
                   <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span className="font-medium">${getSubtotal(cart).toFixed(2)}</span>
+                    <span className="font-medium">£{getSubtotal(cart).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Service Fee (2%)</span>
-                    <span className="font-medium">${getServiceFee(cart).toFixed(2)}</span>
+                    <span className="font-medium">£{getServiceFee(cart).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between pt-3 border-t border-slate-700">
                     <span className="font-bold text-white">Total</span>
                     <span className="font-bold text-lg text-purple-300">
-                      ${getTotal(cart).toFixed(2)}
+                      £{getTotal(cart).toFixed(2)}
                     </span>
                   </div>
                 </div>
