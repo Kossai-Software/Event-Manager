@@ -1885,7 +1885,7 @@ const handleBookNowPaid = (event) => {
                       <div className="bg-slate-700 border-2 border-dashed rounded-xl w-16 h-16" />
                       <div className="ml-4">
                         <h3 className="text-lg font-semibold text-white">{liveEvent.organizer}</h3>
-                        <p className="text-slate-400">Verified Organizer • 15 events hosted</p>
+                        <p className="text-slate-400">Verified Organiser • 15 events hosted</p>
                       </div>
                     </div>
                   </div>
@@ -2313,21 +2313,38 @@ const handleBookNowPaid = (event) => {
   );
 
   // OrganiseEventPage with Multi-step Form
-
   const OrganizeEventPage = ({
-    user,
-    addNotification,
-    setDrafts,
-    drafts,
-    setEvents,
-    setCurrentView,
-    draftToEdit,
-    setDraftToEdit
+  user,
+  addNotification,
+  setDrafts,
+  drafts,
+  setEvents,
+  setCurrentView,
+  draftToEdit,
+  setDraftToEdit
   }) => {
     const [activeStep, setActiveStep] = useState(0); // 0: Event Details, 1: Location, 2: Venue, 3: Tickets, 4: Publish
-    const [eventForm, setEventForm] = useState(() => {
+    const [eventForm, setEventForm] = useState({
+      title: '',
+      category: 'Technology',
+      eventType: 'Conference',
+      description: '',
+      startDate: '',
+      startTime: '',
+      location: '',
+      venueName: '',
+      venueAddress: '',
+      venueCapacity: '',
+      ticketPrice: 0,
+      maxTickets: 100,
+      imageFile: null,
+      imagePreview: null,
+    });
+
+    // Effect to populate form when draftToEdit changes
+    useEffect(() => {
       if (draftToEdit) {
-        return {
+        setEventForm({
           title: draftToEdit.title || '',
           category: draftToEdit.category || 'Technology',
           eventType: draftToEdit.eventType || 'Conference',
@@ -2342,31 +2359,29 @@ const handleBookNowPaid = (event) => {
           maxTickets: draftToEdit.maxTickets || 100,
           imageFile: null,
           imagePreview: draftToEdit.imagePreview || draftToEdit.image || null,
-        };
+        });
+      } else {
+        // Reset form if no draft is being edited
+        setEventForm({
+          title: '',
+          category: 'Technology',
+          eventType: 'Conference',
+          description: '',
+          startDate: '',
+          startTime: '',
+          location: '',
+          venueName: '',
+          venueAddress: '',
+          venueCapacity: '',
+          ticketPrice: 0,
+          maxTickets: 100,
+          imageFile: null,
+          imagePreview: null,
+        });
       }
-      return {
-        title: '',
-        category: 'Technology',
-        eventType: 'Conference',
-        description: '',
-        startDate: '',
-        startTime: '',
-        location: '',
-        venueName: '',
-        venueAddress: '',
-        venueCapacity: '',
-        ticketPrice: 0,
-        maxTickets: 100,
-        imageFile: null,
-        imagePreview: null,
-      };
-    });
+    }, [draftToEdit]);
 
-    useEffect(() => {
-      return () => {
-        if (setDraftToEdit) setDraftToEdit(null);
-      };
-    }, [setDraftToEdit]);
+    // REMOVED: The problematic cleanup effect that cleared draftToEdit prematurely
 
     const fileInputRef = useRef(null);
 
@@ -2469,6 +2484,7 @@ const handleBookNowPaid = (event) => {
         addNotification(`Event "${newEvent.title}" published successfully!`, "success");
       }
 
+      // Reset state
       setEventForm({
         title: '',
         category: 'Technology',
