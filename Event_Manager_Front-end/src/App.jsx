@@ -355,7 +355,7 @@ const HomePage = ({
             { value: "10,000+", label: "Events Hosted", color: "text-purple-700 dark:text-purple-400" },
             { value: "250,000+", label: "Happy Attendees", color: "text-fuchsia-700 dark:text-fuchsia-400" },
             { value: "98%", label: "Satisfaction Rate", color: "text-purple-700 dark:text-purple-400" },
-            { value: "500+", label: "Event Organizers", color: "text-fuchsia-700 dark:text-fuchsia-400" }
+            { value: "500+", label: "Event Organisers", color: "text-fuchsia-700 dark:text-fuchsia-400" }
           ].map((stat, i) => (
             <div key={i} className="bg-white/80 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-lg p-6 text-center border border-gray-200 dark:border-gray-700">
               <div className={`text-3xl font-extrabold ${stat.color}`}>{stat.value}</div>
