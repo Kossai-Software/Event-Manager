@@ -86,10 +86,37 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+// Increment attendees count for an event (used when user registers)
+const incrementAttendees = async (req, res) => {
+  try {
+    const eventId = parseInt(req.params.id);
+    const event = await Event.findById(eventId);
+    
+    if (!event) {
+      return res.status(404).json({ error: 'Event not found' });
+    }
+
+    if ((event.attendees || 0) >= event.capacity) {
+      return res.status(400).json({ error: 'Event is full' });
+    }
+    
+    // Increment attendees count
+    const updatedEvent = await Event.update(eventId, {
+      attendees: (event.attendees || 0) + 1
+    });
+
+    res.json(updatedEvent);
+  } catch (err) {
+    console.error('Error incrementing attendees:', err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   getEvents,
   getEventById,
   createEvent,
   updateEvent,
-  deleteEvent
+  deleteEvent,
+  incrementAttendees
 };
