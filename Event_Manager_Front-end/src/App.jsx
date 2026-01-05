@@ -2707,7 +2707,7 @@ const handleBookNowPaid = (event) => {
                   Ticket Price *
                 </label>
                 <div className="flex items-center">
-                  <span className="text-slate-400 mr-2">$</span>
+                  <span className="text-slate-400 mr-2">£</span>
                   <input
                     type="number"
                     name="ticketPrice"
@@ -2774,6 +2774,10 @@ const handleBookNowPaid = (event) => {
                 <div>
                   <h4 className="font-medium text-slate-300">Price</h4>
                   <p className="text-slate-400">${parseFloat(eventForm.ticketPrice).toFixed(2)}</p>
+                </div>
+                <div>
+                  <h4 className="font-medium text-slate-300">Location</h4>
+                  <p className="text-slate-400">{eventForm.location || "— Not set —"}</p>
                 </div>
               </div>
               {eventForm.imagePreview && (
