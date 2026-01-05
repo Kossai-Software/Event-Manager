@@ -932,7 +932,7 @@ const Navigation = ({
                           <div className="ml-3 flex-1">
                             <h4 className="font-medium text-gray-900 text-sm">{item.title}</h4>
                             <p className="text-xs text-gray-500 mt-1">
-                              {item.tickets} × ${item.price} = ${(item.price * item.tickets).toFixed(2)}
+                              {item.tickets} × £{item.price} = £{(item.price * item.tickets).toFixed(2)}
                             </p>
                           </div>
                           <button 
