@@ -12,10 +12,27 @@ const uploadDir = path.join(__dirname, process.env.UPLOADS_DIR || 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors({ origin: 'http://localhost:5173' }));
+// Middleware - Update CORS for production
+const allowedOrigins = [
+  'http://localhost:5173', // Local development
+  'https://your-project.vercel.app', // Replace with your actual Vercel URL
+  /\.vercel\.app$/ // Allow all Vercel preview deployments
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.some(allowed => 
+      (typeof allowed === 'string' && allowed === origin) || 
+      (allowed instanceof RegExp && allowed.test(origin))
+    )) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(uploadDir)); // serve uploaded files
@@ -32,6 +49,7 @@ app.use('/api/drafts', require('./routes/drafts'));
 // Test route
 app.get('/', (req, res) => res.json({ message: 'EventPro Backend Running!' }));
 
-app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
-});
+// ⚠️ CRITICAL: Remove app.listen() for Vercel
+// Vercel handles the server lifecycle automatically
+
+module.exports = app;
