@@ -20,7 +20,7 @@
       "dest": "Event_Manger_Back-end/server.js"
     },
     {
-      "handle": "filesystem"  // 👈 THIS IS CRITICAL - ADD THIS LINE
+      "handle": "filesystem" 
     },
     {
       "src": "/(.*)",
