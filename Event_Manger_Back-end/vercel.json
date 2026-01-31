@@ -7,7 +7,7 @@
       "config": {
         "distDir": "dist",
         "includeNodeModules": true,
-        "buildCommand": "npm run build" // 👈 THIS IS CRITICAL
+        "buildCommand": "npm run build" 
       }
     },
     {
