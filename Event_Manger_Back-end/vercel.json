@@ -6,7 +6,7 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist",
-        "includeNodeModules": true 
+        "includeNodeModules": true
       }
     },
     {
@@ -20,8 +20,11 @@
       "dest": "Event_Manger_Back-end/server.js"
     },
     {
+      "handle": "filesystem"  // 👈 THIS IS CRITICAL - ADD THIS LINE
+    },
+    {
       "src": "/(.*)",
-      "dest": "Event_Manager_Front-end/dist/$1"
+      "dest": "Event_Manager_Front-end/dist/index.html"
     }
   ],
   "env": {
