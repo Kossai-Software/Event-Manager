@@ -1,0 +1,23 @@
+{
+  "builds": [
+    {
+      "src": "Event_Manager_Front-end/**",
+      "use": "@vercel/static-build",
+      "config": {
+        "buildCommand": "npm run build",
+        "outputDirectory": "dist"
+      }
+    },
+    {
+      "src": "Event_Manger_Back-end/server.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["Event_Manger_Back-end/**"]
+      }
+    }
+  ],
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/api/(.*)", "dest": "Event_Manger_Back-end/server.js" }
+  ]
+}
