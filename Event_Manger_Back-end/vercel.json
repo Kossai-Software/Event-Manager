@@ -1,23 +1,29 @@
 {
+  "version": 2,
   "builds": [
     {
-      "src": "Event_Manager_Front-end/**",
+      "src": "Event_Manager_Front-end/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "buildCommand": "npm run build",
-        "outputDirectory": "dist"
+        "distDir": "dist"
       }
     },
     {
       "src": "Event_Manger_Back-end/server.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["Event_Manger_Back-end/**"]
-      }
+      "use": "@vercel/node"
     }
   ],
   "routes": [
-    { "handle": "filesystem" },
-    { "src": "/api/(.*)", "dest": "Event_Manger_Back-end/server.js" }
-  ]
+    {
+      "src": "/api/(.*)",
+      "dest": "Event_Manger_Back-end/server.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "Event_Manager_Front-end/dist/$1"
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
