@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-//import { getEvents, getCart, getNotifications } from './api';
+import { getEvents, getCart, getNotifications } from './api';
 import {
   Search,
   Calendar,
