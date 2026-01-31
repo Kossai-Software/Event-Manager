@@ -16,7 +16,6 @@ const app = express();
 // Middleware - Update CORS for production
 const allowedOrigins = [
   'http://localhost:5173', // Local development
-  'https://your-project.vercel.app', // Replace with your actual Vercel URL
   /\.vercel\.app$/ // Allow all Vercel preview deployments
 ];
 
@@ -49,7 +48,7 @@ app.use('/api/drafts', require('./routes/drafts'));
 // Test route
 app.get('/', (req, res) => res.json({ message: 'EventPro Backend Running!' }));
 
-// ⚠️ CRITICAL: Remove app.listen() for Vercel
+// CRITICAL: Remove app.listen() for Vercel
 // Vercel handles the server lifecycle automatically
 
 module.exports = app;
