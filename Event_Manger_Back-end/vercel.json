@@ -5,7 +5,8 @@
       "src": "Event_Manager_Front-end/package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist",
+        "includeNodeModules": true 
       }
     },
     {
