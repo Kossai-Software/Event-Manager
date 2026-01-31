@@ -6,7 +6,8 @@
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist",
-        "includeNodeModules": true
+        "includeNodeModules": true,
+        "buildCommand": "npm run build" // 👈 THIS IS CRITICAL
       }
     },
     {
@@ -20,7 +21,7 @@
       "dest": "Event_Manger_Back-end/server.js"
     },
     {
-      "handle": "filesystem" 
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
